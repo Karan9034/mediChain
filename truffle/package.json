@@ -6,6 +6,10 @@
     "test": "truffle test"
   },
   "dependencies": {
-    "@truffle/hdwallet-provider": "^2.1.7"
+    "@truffle/hdwallet-provider": "^2.0.10",
+    "chai": "^4.3.6",
+    "chai-as-promised": "^7.1.1",
+    "dotenv": "^16.0.1",
+    "truffle": "^5.5.23"
   }
 }
