@@ -2,21 +2,32 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 contract MedicalRecords {
-    struct patient {
+    // State Variables
+    uint creditPool;
+    string public name;
+    address[] public patientList;
+    address[] public doctorList;
+    address[] public insurerList;
+    mapping (address => Patient) patientInfo;
+    mapping (address => Doctor) doctorInfo;
+    mapping (address => Insurer) insurerInfo;
+    mapping (address => address) Patient_Insurer;
+    mapping (address => string) patientRecords;
+
+
+    struct Patient {
         string name;
         uint age;
         address[] doctorAccessList;
         uint[] diagnosis;
         string record;
     }
-    
-    struct doctor {
+    struct Doctor {
         string name;
         uint age;
         address[] patientAccessList;
     }
-
-    struct insurer {
+    struct Insurer {
         string name;
         uint count_of_patient;
         address[] PatientWhoClaimed;
@@ -24,42 +35,62 @@ contract MedicalRecords {
         uint[] diagnosis;
     }
 
+    
 
-    uint creditPool;
-    string public name;
+    // event PatientAdded(
+    //     string name,
+    //     uint age,
+    //     address[] doctorAccessList,
+    //     uint[] diagnosis,
+    //     string record
+    // );
+    // event DoctorAdded(
+    //     string name,
+    //     uint age,
+    //     address[] patientAccessList
+    // );
+    // event InsurerAdded(
+    //     string name,
+    //     uint count_of_patient,
+    //     address[] PatientWhoClaimed,
+    //     address[] DocName,
+    //     uint[] diagnosis
+    // );
+    
 
-    address[] public patientList;
-    address[] public doctorList;
-    address[] public insurerList;
-
-    mapping (address => patient) patientInfo;
-    mapping (address => doctor) doctorInfo;
-    mapping (address => insurer) insurerInfo;
-    mapping (address => address) Patient_Insurer;
-    // might not be necessary
-    mapping (address => string) patientRecords;
+    
 
     constructor(){
         name = "medicalRecords";
     }
 
     function add_agent(string memory _name, uint _age, uint _designation, string memory _hash) public {
+        require(msg.sender != address(0));
+        require(_designation >= 0 && _designation <3);
         address addr = msg.sender;
-        
         if(_designation == 0){
+            require(bytes(_name).length > 0);
+            require(_age > 0);
+            require(bytes(_hash).length > 0);
             patientInfo[addr].name = _name;
             patientInfo[addr].age = _age;
             patientInfo[addr].record = _hash;
             patientList.push(addr);
+            // emit PatientAdded(patientInfo[addr].name, patientInfo[addr].age, patientInfo[addr].doctorAccessList, patientInfo[addr].diagnosis, patientInfo[addr].record);
         }
         else if (_designation == 1){
+            require(bytes(_name).length > 0);
+            require(_age > 0);
             doctorInfo[addr].name = _name;
             doctorInfo[addr].age = _age;
             doctorList.push(addr);
+            // emit DoctorAdded(doctorInfo[addr].name, doctorInfo[addr].age, doctorInfo[addr].patientAccessList);
         }
         else if(_designation == 2){
+            require(bytes(_name).length > 0);
             insurerInfo[addr].name = _name;
             insurerList.push(addr);
+            // emit InsurerAdded(insurerInfo[addr].name, insurerInfo[addr].count_of_patient, insurerInfo[addr].PatientWhoClaimed, insurerInfo[addr].DocName, insurerInfo[addr].diagnosis);
         }
         else{
             revert();
@@ -67,33 +98,31 @@ contract MedicalRecords {
     }
 
     function get_patient(address addr) view public returns (string memory, uint, uint[] memory, address, string memory){
-        // if(keccak256(patientInfo[addr].name) == keccak256(""))revert();
         return (patientInfo[addr].name, patientInfo[addr].age, patientInfo[addr].diagnosis, Patient_Insurer[addr], patientInfo[addr].record);
     }
 
     function get_doctor(address addr) view public returns (string memory, uint){
-        // if(keccak256(doctorInfo[addr].name)==keccak256(""))revert();
         return (doctorInfo[addr].name, doctorInfo[addr].age);
     }
     function get_patient_doctor_name(address paddr, address daddr) view public returns (string memory, string memory){
-        return (patientInfo[paddr].name,doctorInfo[daddr].name);
+        return (patientInfo[paddr].name, doctorInfo[daddr].name);
     }
     function get_insurer(address addr) view public returns (string memory, uint, address[] memory, address[] memory, uint[] memory){
-        // if(keccak256(doctorInfo[addr].name)==keccak256(""))revert();
         return (insurerInfo[addr].name, insurerInfo[addr].count_of_patient, insurerInfo[addr].PatientWhoClaimed, 
         insurerInfo[addr].DocName, insurerInfo[addr].diagnosis);
     }
 
-    function permit_access(address addr) payable public {
-        require(msg.value == 2 ether);
-
+    // Called by patient
+    function permit_access(address addr) public {
+        // require(msg.value == 2 ether);
+        require(bytes(patientInfo[msg.sender].name).length > 0);
+        require(bytes(doctorInfo[addr].name).length > 0);
         creditPool += 2;
-        
         doctorInfo[addr].patientAccessList.push(msg.sender);
         patientInfo[msg.sender].doctorAccessList.push(addr);
     }
 
-   
+
     function select_insurer(address payable iaddr, uint[] memory _diagnosis) payable public {
         uint total_amount = (_diagnosis.length);
         require(msg.value == total_amount*(1 ether));
@@ -104,7 +133,7 @@ contract MedicalRecords {
         insurerInfo[iaddr].count_of_patient++;
     }
 
-    //must be called by doctor
+    // Called by doctor
     function insurance_claim(address paddr, uint _diagnosis, string memory _hash) public {
         bool patientFound = false;
         for(uint i = 0;i<doctorInfo[msg.sender].patientAccessList.length;i++){
