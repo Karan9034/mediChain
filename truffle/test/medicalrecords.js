@@ -4,7 +4,7 @@ require('chai')
     .use(require('chai-as-promised'))
     .should()
 
-contract('MedicalRecords', ([deployer, patientOne, patientTwo, doctorOne, doctorTwo]) => {
+contract('MedicalRecords', ([deployer, patientOne, patientTwo, doctorOne, doctorTwo, insurerOne, insurerTwo]) => {
     let medicalRecords
 
     before(async () => {
