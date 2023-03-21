@@ -1,5 +1,5 @@
 
-const SiteNavbar = () => {
+const Footer = () => {
     return (
         <div>
 
@@ -8,4 +8,4 @@ const SiteNavbar = () => {
 }
 
 
-export default SiteNavbar
+export default Footer
