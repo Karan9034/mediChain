@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "description": "Truffle project with SimpleStorage contract",
   "scripts": {
+    "compile": "truffle compile",
+    "migrate": "truffle migrate --reset",
     "test": "truffle test"
   },
   "dependencies": {

@@ -19,7 +19,7 @@ import SiteNavbar from './components/SiteNavbar';
 
 function App() {
   const [account, setAccount] = useState('');
-  const [currPage, setcurrPage] = useState('home');
+  const [currPage, setCurrPage] = useState('home');
   const [medicalRecords, setMedicalRecords] = useState(null);
 
   // const connectWallet = async () => {
@@ -58,8 +58,8 @@ function App() {
 
   return (
     <div>
-      <SiteNavbar />
-      <Main currPage={currPage}/>
+      <SiteNavbar account={account} setAccount={setAccount} setCurrPage={setCurrPage}/>
+      <Main currPage={currPage} account={account} medicalRecords={medicalRecords}/>
       <Footer />
     </div>
   );
