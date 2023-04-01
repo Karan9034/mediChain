@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 // import Web3 from 'web3';
 // import { create } from 'ipfs-http-client';
-// import MedicalRecords from './contracts/MedicalRecords.json';
-import Main from './components/Main';
+// import MediChain from './contracts/MediChain.json';
+import Home from './components/Home.js';
+import Login from './components/Login.js';
+import Register from './components/Register.js';
 import Footer from './components/Footer';
 import SiteNavbar from './components/SiteNavbar';
-
+import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 
 // const auth = 'Basic ' + Buffer.from(process.env.REACT_APP_INFURA_API_KEY + ':' + process.env.REACT_APP_INFURA_API_SECRET).toString('base64');
 // const ipfs = create({
@@ -19,8 +21,7 @@ import SiteNavbar from './components/SiteNavbar';
 
 function App() {
   const [account, setAccount] = useState('');
-  const [currPage, setCurrPage] = useState('home');
-  const [medicalRecords, setMedicalRecords] = useState(null);
+  // const [mediChain, setMediChain] = useState(null);
 
   // const connectWallet = async () => {
   //   if (window.ethereum) {
@@ -39,13 +40,13 @@ function App() {
   // }
 
   // const getContractInstance = async () => {
-  //   const web3 = new Web3(window.ethereum || Web3.givenProvider || 'http://localhost:8545')
+  //   const web3 = new Web3(window.ethereum || Web3.givenProvider || 'http://localhost:7545')
   //   const networkId = await web3.eth.net.getId()
-  //   const networkData = MedicalRecords.networks[networkId]
+  //   const networkData = MediChain.networks[networkId]
   //   if(networkData){
-  //     const medicalRecords = new web3.eth.Contract(MedicalRecords.abi, networkData.address)
-  //     setMedicalRecords(medicalRecords)
-  //     console.log(await medicalRecords.methods.name().call())
+  //     const mediChain = new web3.eth.Contract(MediChain.abi, networkData.address)
+  //     setMediChain(mediChain)
+  //     console.log(await mediChain.methods.name().call())
   //   }else{
   //     console.log('Please change your network')
   //   }
@@ -53,15 +54,19 @@ function App() {
 
   useEffect(() => {
     // getContractInstance()
+    // connectWallet()
   }, [])
 
-
   return (
-    <div>
-      <SiteNavbar account={account} setAccount={setAccount} setCurrPage={setCurrPage}/>
-      <Main currPage={currPage} account={account} medicalRecords={medicalRecords}/>
+    <Router>
+      <SiteNavbar account={account} setAccount={setAccount}/>
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/register' element={<Register />} />
+      </Routes>
       <Footer />
-    </div>
+    </Router>
   );
 }
 

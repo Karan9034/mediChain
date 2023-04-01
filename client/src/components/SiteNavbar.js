@@ -1,20 +1,21 @@
 import Identicon from 'identicon.js';
 import { Container, Nav, Navbar } from "react-bootstrap";
+import { Link, redirect } from 'react-router-dom';
 
-const SiteNavbar = ({account, setAccount, setCurrPage}) => {
+const SiteNavbar = ({account, setAccount}) => {
     const logout = () => {
         setAccount('');
-        setCurrPage('home');
+        redirect('/');
     }
     return (
-        <Navbar collapseOnSelect expand="md" variant="dark" bg='dark' fixed="top" className="site-navbar">
+        <Navbar collapseOnSelect expand="md" variant="dark" bg='primary' fixed="top" className="site-navbar">
             <Container>
-                <Navbar.Brand onClick={()=>{}}>AppName</Navbar.Brand>
+                <Navbar.Brand as={Link} to="/">AppName</Navbar.Brand>
                 <Nav justify>
                     { account!=='' ? 
                         <>
                             <Nav.Item>
-                                <small className='text-secondary'>
+                                <small className=''>
                                     {account.slice(0, 5)+ '...' + account.slice(-4)}
                                 </small>
                             </Nav.Item>
@@ -27,21 +28,21 @@ const SiteNavbar = ({account, setAccount, setCurrPage}) => {
                                     alt="profile"
                                 />
                             </Nav.Item>
-                            <Nav.Item onClick={()=> logout()}>
-                                <small className='text-secondary'>
+                            <Nav.Item onClick={logout}>
+                                <small className=''>
                                     Log Out
                                 </small>
                             </Nav.Item>
                         </>
                         : 
                         <>
-                            <Nav.Link onClick={() => setCurrPage('login')}>
-                                <small className='text-secondary'>
+                            <Nav.Link as={Link} to="/login" >
+                                <small className=''>
                                     Login
                                 </small>
                             </Nav.Link>
-                            <Nav.Link onClick={() => setCurrPage('register')}>
-                                <small className='text-secondary'>
+                            <Nav.Link  as={Link} to="/register" >
+                                <small className=''>
                                     Register
                                 </small>
                             </Nav.Link>

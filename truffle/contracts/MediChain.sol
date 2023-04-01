@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
-contract MedicalRecords {
+contract MediChain {
     // State Variables
     uint creditPool;
     string public name;
@@ -61,7 +61,7 @@ contract MedicalRecords {
     
 
     constructor(){
-        name = "medicalRecords";
+        name = "medichain";
     }
 
     function add_agent(string memory _name, uint _age, uint _designation, string memory _hash) public {
