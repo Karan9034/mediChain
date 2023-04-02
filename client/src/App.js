@@ -22,15 +22,16 @@ const ipfs = create({
 
 function App() {
   const [account, setAccount] = useState('');
+  const [token, setToken] = useState('');
   const [mediChain, setMediChain] = useState(null);
 
   const connectWallet = async () => {
     if (window.ethereum) {
-			window.ethereum.request({ method: 'eth_requestAccounts'})
-			  .then(result => {
-				  setAccount(result[0]);
-			  })
-			  .catch(error => {
+      window.ethereum.request({ method: 'eth_requestAccounts'})
+        .then(result => {
+          setAccount(result[0]);
+        })
+        .catch(error => {
          console.log(error)
        });
       window.ethereum.on('accountsChanged', () => window.location.reload());
@@ -59,11 +60,11 @@ function App() {
 
   return (
     <Router>
-      <SiteNavbar account={account} setAccount={setAccount}/>
+      <SiteNavbar token={token} account={account} setAccount={setAccount} setToken={setToken}/>
       <Routes>
         <Route path='/' element={<Home />} />
-        <Route path='/login' element={<Login mediChain={mediChain} connectWallet={connectWallet} />} />
-        <Route path='/register' element={<Register mediChain={mediChain} connectWallet={connectWallet} />} />
+        <Route path='/login' element={<Login mediChain={mediChain} token={token} connectWallet={connectWallet} account={account}/>} />
+        <Route path='/register' element={<Register mediChain={mediChain} token={token} connectWallet={connectWallet} account={account} />} />
       </Routes>
       <Footer />
     </Router>

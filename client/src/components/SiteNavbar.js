@@ -2,17 +2,18 @@ import Identicon from 'identicon.js';
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { Link, redirect } from 'react-router-dom';
 
-const SiteNavbar = ({account, setAccount}) => {
+const SiteNavbar = ({token, account, setAccount, setToken}) => {
     const logout = () => {
         setAccount('');
+        setToken('')
         redirect('/');
     }
     return (
         <Navbar collapseOnSelect expand="md" variant="dark" bg='primary' fixed="top" className="site-navbar">
             <Container>
-                <Navbar.Brand as={Link} to="/">AppName</Navbar.Brand>
+                <Navbar.Brand as={Link} to="/">MediChain</Navbar.Brand>
                 <Nav justify>
-                    { account!=='' ? 
+                    { token!=='' ? 
                         <>
                             <Nav.Item>
                                 <small className=''>
