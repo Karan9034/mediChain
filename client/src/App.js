@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-// import Web3 from 'web3';
-// import { create } from 'ipfs-http-client';
+import Web3 from 'web3';
+import { create } from 'ipfs-http-client';
+import { Buffer } from 'buffer';
 // import MediChain from './contracts/MediChain.json';
 import Home from './components/Home.js';
 import Login from './components/Login.js';
@@ -9,35 +10,35 @@ import Footer from './components/Footer';
 import SiteNavbar from './components/SiteNavbar';
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 
-// const auth = 'Basic ' + Buffer.from(process.env.REACT_APP_INFURA_API_KEY + ':' + process.env.REACT_APP_INFURA_API_SECRET).toString('base64');
-// const ipfs = create({
-//   host: 'ipfs.infura.io',
-//   port: 5001,
-//   protocol: 'https',
-//   headers: {
-//     authorization: auth
-//   }
-// });
+const auth = 'Basic ' + Buffer.from(process.env.REACT_APP_INFURA_PROJECT_ID + ':' + process.env.REACT_APP_INFURA_API_KEY_SECRET).toString('base64');
+const ipfs = create({
+  host: 'ipfs.infura.io',
+  port: 5001,
+  protocol: 'https',
+  headers: {
+    authorization: auth
+  }
+});
 
 function App() {
   const [account, setAccount] = useState('');
-  // const [mediChain, setMediChain] = useState(null);
+  const [mediChain, setMediChain] = useState(null);
 
-  // const connectWallet = async () => {
-  //   if (window.ethereum) {
-	// 		window.ethereum.request({ method: 'eth_requestAccounts'})
-	// 		  .then(result => {
-	// 			  setAccount(result[0]);
-	// 		  })
-	// 		  .catch(error => {
-  //        console.log(error)
-  //      });
-  //     window.ethereum.on('accountsChanged', () => window.location.reload());
-  //     window.ethereum.on('chainChanged', () => window.location.reload());
-	// 	} else {
-	// 		console.log('Please use Metamask or a Web3 enabled browser');
-	// 	}
-  // }
+  const connectWallet = async () => {
+    if (window.ethereum) {
+			window.ethereum.request({ method: 'eth_requestAccounts'})
+			  .then(result => {
+				  setAccount(result[0]);
+			  })
+			  .catch(error => {
+         console.log(error)
+       });
+      window.ethereum.on('accountsChanged', () => window.location.reload());
+      window.ethereum.on('chainChanged', () => window.location.reload());
+		} else {
+			console.log('Please use Metamask or a Web3 enabled browser');
+		}
+  }
 
   // const getContractInstance = async () => {
   //   const web3 = new Web3(window.ethereum || Web3.givenProvider || 'http://localhost:7545')
@@ -54,7 +55,6 @@ function App() {
 
   useEffect(() => {
     // getContractInstance()
-    // connectWallet()
   }, [])
 
   return (
@@ -62,8 +62,8 @@ function App() {
       <SiteNavbar account={account} setAccount={setAccount}/>
       <Routes>
         <Route path='/' element={<Home />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/register' element={<Register />} />
+        <Route path='/login' element={<Login mediChain={mediChain} connectWallet={connectWallet} />} />
+        <Route path='/register' element={<Register mediChain={mediChain} connectWallet={connectWallet} />} />
       </Routes>
       <Footer />
     </Router>

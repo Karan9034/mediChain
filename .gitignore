@@ -14,7 +14,6 @@ client/*/src/contracts
 coverage
 
 # Env
-.env
 .env.local
 .env.development.local
 .env.test.local
