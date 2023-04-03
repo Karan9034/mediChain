@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Web3 from 'web3';
 import { create } from 'ipfs-http-client';
 import { Buffer } from 'buffer';
-import MediChain from './contracts/MediChain.json';
+// import MediChain from './contracts/MediChain.json';
 import Dashboard from './components/Dashboard.js';
 import Login from './components/Login.js';
 import Register from './components/Register.js';
@@ -41,21 +41,21 @@ function App() {
 		}
   }
 
-  const getContractInstance = async () => {
-    const web3 = new Web3(window.ethereum || Web3.givenProvider || 'http://localhost:7545')
-    const networkId = await web3.eth.net.getId()
-    const networkData = MediChain.networks[networkId]
-    if(networkData){
-      const mediChain = new web3.eth.Contract(MediChain.abi, networkData.address)
-      setMediChain(mediChain)
-      console.log(await mediChain.methods.name().call())
-    }else{
-      console.log('Please change your network')
-    }
-  }
+  // const getContractInstance = async () => {
+  //   const web3 = new Web3(window.ethereum || Web3.givenProvider || 'http://localhost:7545')
+  //   const networkId = await web3.eth.net.getId()
+  //   const networkData = MediChain.networks[networkId]
+  //   if(networkData){
+  //     const mediChain = new web3.eth.Contract(MediChain.abi, networkData.address)
+  //     setMediChain(mediChain)
+  //     console.log(await mediChain.methods.name().call())
+  //   }else{
+  //     console.log('Please change your network')
+  //   }
+  // }
 
   useEffect(() => {
-    getContractInstance()
+    // getContractInstance()
   }, [])
 
   return (
