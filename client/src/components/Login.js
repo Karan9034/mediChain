@@ -1,17 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { redirect } from 'react-router-dom';
 
-const Login = ({mediChain, connectWallet, token, account}) => {
-    const [email, setEmail] = useState("");
-
+const Login = ({mediChain, connectWallet, token, account, setToken, setAccount}) => {
     const handleSubmit = (e) => {
         e.preventDefault();
     }
 
     useEffect(() => {
-        if(token) redirect('/')
-    }, [token])
+        if(token && account) redirect('/');
+        else{
+            setToken('');
+            setAccount('');
+        }
+    }, [])
 
     return (
         <div className='main'>

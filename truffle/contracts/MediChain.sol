@@ -3,7 +3,6 @@ pragma solidity >=0.4.22 <0.9.0;
 
 contract MediChain {
     // State Variables
-    uint creditPool;
     string public name;
     address[] public patientList;
     address[] public doctorList;
@@ -13,10 +12,12 @@ contract MediChain {
     mapping (address => Insurer) insurerInfo;
     mapping (address => address) Patient_Insurer;
     mapping (address => string) patientRecords;
-
+    mapping (string => address) public emailToAddress;
+    mapping (string => uint) public emailToDesignation;
 
     struct Patient {
         string name;
+        string email;
         uint age;
         address[] doctorAccessList;
         uint[] diagnosis;
@@ -24,11 +25,12 @@ contract MediChain {
     }
     struct Doctor {
         string name;
-        uint age;
+        string email;
         address[] patientAccessList;
     }
     struct Insurer {
         string name;
+        string email;
         uint count_of_patient;
         address[] PatientWhoClaimed;
         address[] DocName;
@@ -64,30 +66,42 @@ contract MediChain {
         name = "medichain";
     }
 
-    function add_agent(string memory _name, uint _age, uint _designation, string memory _hash) public {
+    function add_agent(string memory _name, uint _age, uint _designation, string memory _email, string memory _hash) public {
         require(msg.sender != address(0));
         require(_designation >= 0 && _designation <3);
         require(bytes(_name).length > 0);
+        require(bytes(_email).length > 0);
         address addr = msg.sender;
         if(_designation == 0){
             require(_age > 0);
             require(bytes(_hash).length > 0);
+            require(bytes(patientInfo[addr].name).length == 0);
+            require(emailToAddress[_email] == address(0));
             patientInfo[addr].name = _name;
+            patientInfo[addr].email = _email;
             patientInfo[addr].age = _age;
             patientInfo[addr].record = _hash;
             patientList.push(addr);
+            emailToAddress[_email] = addr;
+            emailToDesignation[_email] = _designation;
             // emit PatientAdded(patientInfo[addr].name, patientInfo[addr].age, patientInfo[addr].doctorAccessList, patientInfo[addr].diagnosis, patientInfo[addr].record);
         }
         else if (_designation == 1){
-            require(_age > 0);
+            require(bytes(doctorInfo[addr].name).length == 0);
             doctorInfo[addr].name = _name;
-            doctorInfo[addr].age = _age;
+            doctorInfo[addr].email = _email;
             doctorList.push(addr);
+            emailToAddress[_email] = addr;
+            emailToDesignation[_email] = _designation;
             // emit DoctorAdded(doctorInfo[addr].name, doctorInfo[addr].age, doctorInfo[addr].patientAccessList);
         }
         else if(_designation == 2){
+            require(bytes(insurerInfo[addr].name).length == 0);
             insurerInfo[addr].name = _name;
+            insurerInfo[addr].email = _email;
             insurerList.push(addr);
+            emailToAddress[_email] = addr;
+            emailToDesignation[_email] = _designation;
             // emit InsurerAdded(insurerInfo[addr].name, insurerInfo[addr].count_of_patient, insurerInfo[addr].PatientWhoClaimed, insurerInfo[addr].DocName, insurerInfo[addr].diagnosis);
         }
         else{
@@ -101,10 +115,10 @@ contract MediChain {
         return (patientInfo[addr].name, patientInfo[addr].age, patientInfo[addr].diagnosis, Patient_Insurer[addr], patientInfo[addr].record);
     }
 
-    function get_doctor(address addr) view public returns (string memory, uint){
+    function get_doctor(address addr) view public returns (string memory){
         require(addr != address(0));
         require(msg.sender != address(0));
-        return (doctorInfo[addr].name, doctorInfo[addr].age);
+        return (doctorInfo[addr].name);
     }
     function get_patient_doctor_name(address paddr, address daddr) view public returns (string memory, string memory){
         require(paddr != address(0));
@@ -120,14 +134,12 @@ contract MediChain {
     }
 
     // Called by patient
-    // Review: creditPool and self transfer?
     function permit_access(address addr) public {
         // require(msg.value == 2 ether);
         require(addr != address(0));
         require(msg.sender != address(0));
         require(bytes(patientInfo[msg.sender].name).length > 0);
         require(bytes(doctorInfo[addr].name).length > 0);
-        // creditPool += 2;
         doctorInfo[addr].patientAccessList.push(msg.sender);
         patientInfo[msg.sender].doctorAccessList.push(addr);
     }
@@ -146,7 +158,6 @@ contract MediChain {
 
 
     // Called by doctor
-    // Review: creditPool and self transfer
     function insurance_claim(address payable paddr, uint _diagnosis, string memory _hash) public {
         require(paddr != address(0));
         require(msg.sender != address(0));
@@ -154,7 +165,6 @@ contract MediChain {
         for(uint i = 0;i<doctorInfo[msg.sender].patientAccessList.length;i++){
             if(doctorInfo[msg.sender].patientAccessList[i]==paddr){
                 // (msg.sender).transfer(2 ether);
-                // creditPool -= 2;
                 patientFound = true;
             }
         }
@@ -233,13 +243,11 @@ contract MediChain {
         return doctorInfo[addr].patientAccessList;
     }
 
-    // Review: creditPool and self transfer
     function revoke_access(address daddr) public payable{
         require(daddr != address(0));
         require(msg.sender != address(0));
         remove_patient(msg.sender,daddr);
         // payable(msg.sender).transfer(2 ether);
-        // creditPool -= 2;
     }
 
     function get_patient_list() public view returns(address[] memory){

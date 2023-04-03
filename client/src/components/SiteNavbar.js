@@ -1,4 +1,5 @@
 import Identicon from 'identicon.js';
+import { useEffect } from 'react';
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { Link, redirect } from 'react-router-dom';
 
@@ -6,8 +7,11 @@ const SiteNavbar = ({token, account, setAccount, setToken}) => {
     const logout = () => {
         setAccount('');
         setToken('')
-        redirect('/');
+        redirect('/login');
     }
+    useEffect(() => {
+
+    }, [])
     return (
         <Navbar collapseOnSelect expand="md" variant="dark" bg='primary' fixed="top" className="site-navbar">
             <Container>
