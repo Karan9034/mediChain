@@ -2,7 +2,8 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import Table from 'react-bootstrap/Table'
+import Table from 'react-bootstrap/Table';
+import report from '../Images/report.png';
 const Patient = ({abc}) => {
 
     return (
@@ -60,6 +61,9 @@ const Patient = ({abc}) => {
         
       </tbody>
     </Table>
+    <h2>View Medical Diagnosis</h2>
+    <img src={report} />
+
 </div>
     )
 }
