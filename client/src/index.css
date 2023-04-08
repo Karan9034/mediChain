@@ -1,15 +1,21 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+html {
+  font-size: 14px;
+  font-family: sans-serif;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif; */
+  /* -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; */
 }
 
 .main{
@@ -17,4 +23,38 @@ code {
   margin-top: 10vh;
   margin-left: 30%;
   margin-right: 30%;
+}
+.dash{
+  width: 50%;
+  margin-top: 10vh;
+  margin-left: 25%;
+  margin-right: 25%;
+}
+
+nav {
+  height: 5rem;
+  padding: 0 3rem !important;
+}
+.navbar-brand{
+  font-size: 1.3rem !important;
+  cursor: pointer;
+}
+.nav-link, .nav-item{
+  padding-top: 1rem;
+  width: max-content;
+}
+.img{
+  padding: 0;
+}
+.text-nav{
+  margin-right: 2rem;
+  font-size: 1rem;
+}
+
+.box{
+  border: 0.5px solid #aaa;
+  border-radius: 10px;
+  padding: 2vh 1vw;
+  margin-bottom: 5vh;
+  background-color: #fafafa;
 }

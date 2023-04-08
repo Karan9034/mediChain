@@ -1,19 +1,93 @@
 import { useEffect } from 'react';
 import { Button, Form } from 'react-bootstrap';
-import { redirect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Login = ({mediChain, connectWallet, token, account, setToken, setAccount}) => {
-    const handleSubmit = (e) => {
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        if(account==="") return;
+        var res = await mediChain.methods.patientInfo(account).call()
+        if(res.exists){
+            setToken('1');
+            localStorage.setItem('token', '1');
+            localStorage.setItem('account', account);
+            return navigate('/dashboard')
+        }
+        res = await mediChain.methods.doctorInfo(account).call()
+        if(res.exists){
+            setToken('2');
+            localStorage.setItem('token', '2');
+            localStorage.setItem('account', account);
+            return navigate('/dashboard')
+        }
+        res = await mediChain.methods.insurerInfo(account).call()
+        if(res.exists){
+            setToken('3');
+            localStorage.setItem('token', '3');
+            localStorage.setItem('account', account);
+            return navigate('/dashboard')
+        }
+        localStorage.removeItem('token')
+        localStorage.removeItem('account')
+        setToken('');
+        setAccount('');
     }
 
     useEffect(() => {
-        if(token && account) redirect('/');
-        else{
-            setToken('');
-            setAccount('');
+        if(mediChain){   
+            var t = localStorage.getItem('token')
+            var a = localStorage.getItem('account')
+            t = t ? t : ""
+            a = a ? a : ""
+            if(t!=="" || a!==""){
+                if(t==="1"){
+                    mediChain.methods.patientInfo(a).call().then((res) => {
+                        if(res.exists){
+                            setToken(t);
+                            setAccount(a);            
+                            return navigate('/dashboard')
+                        }else{
+                            console.log("rem1", t, a)
+                            localStorage.removeItem('token')
+                            localStorage.removeItem('account')
+                            setToken('');
+                            setAccount('');
+                        }
+                    })
+                }else if(t==="2"){
+                    mediChain.methods.doctorInfo(a).call().then((res) => {
+                        if(res.exists){
+                            setToken(t);
+                            setAccount(a);
+                            return navigate('/dashboard')
+                        }else{
+                            console.log("rem2", t, a)
+                            localStorage.removeItem('token')
+                            localStorage.removeItem('account')
+                            setToken('');
+                            setAccount('');
+                        }
+                    })
+                }else if(t==="3"){
+                    mediChain.methods.insurerInfo(a).call().then((res) => {
+                        if(res.exists){
+                            setToken(t);
+                            setAccount(a);
+                            return navigate('/dashboard')
+                        }else{
+                            console.log("rem3", t, a)
+                            localStorage.removeItem('token')
+                            localStorage.removeItem('account')
+                            setToken('');
+                            setAccount('');
+                        }
+                    })
+                }
+            }
         }
-    }, [])
+    }, [mediChain])
 
     return (
         <div className='main'>

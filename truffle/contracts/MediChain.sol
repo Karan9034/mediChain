@@ -26,28 +26,28 @@ contract MediChain {
         string name;
         string email;
         uint age;
-        address[] doctorAccessList;
         string record;
+        bool exists;
         bool policyActive;
         Policy policy;
         uint[] transactions;
-        bool exists;
+        address[] doctorAccessList;
     }
     struct Doctor {
         string name;
         string email;
-        address[] patientAccessList;
-        uint[] transactions;
         bool exists;
+        uint[] transactions;
+        address[] patientAccessList;
     }
     struct Insurer {
         string name;
         string email;
+        bool exists;
         Policy[] policies;
         address[] patients;
         uint[] claims;
         uint[] transactions;
-        bool exists;
     }
     struct Policy {
         address insurer;
@@ -115,33 +115,37 @@ contract MediChain {
         require(emailToAddress[_email] == address(0));
         require(emailToDesignation[_email] == 0);
         address _addr = msg.sender;
+        require(!patientInfo[_addr].exists);
+        require(!doctorInfo[_addr].exists);
+        require(!insurerInfo[_addr].exists);
         if(_designation == 1){
             require(_age > 0);
             require(bytes(_hash).length > 0);
-            require(!patientInfo[_addr].exists);
-            patientInfo[_addr].name = _name;
-            patientInfo[_addr].email = _email;
-            patientInfo[_addr].age = _age;
-            patientInfo[_addr].record = _hash;
-            patientInfo[_addr].exists = true;
+            Patient storage pinfo = patientInfo[_addr];
+            pinfo.name = _name;
+            pinfo.email = _email;
+            pinfo.age = _age;
+            pinfo.record = _hash;
+            pinfo.exists = true;
+            pinfo.doctorAccessList;
             patientList.push(_addr);
             emailToAddress[_email] = _addr;
             emailToDesignation[_email] = _designation;
         }
         else if (_designation == 2){
-            require(!doctorInfo[_addr].exists);
-            doctorInfo[_addr].name = _name;
-            doctorInfo[_addr].email = _email;
-            doctorInfo[_addr].exists = true;
+            Doctor storage dinfo = doctorInfo[_addr];
+            dinfo.name = _name;
+            dinfo.email = _email;
+            dinfo.exists = true;
             doctorList.push(_addr);
             emailToAddress[_email] = _addr;
             emailToDesignation[_email] = _designation;
         }
         else if(_designation == 3){
-            require(!insurerInfo[_addr].exists);
-            insurerInfo[_addr].name = _name;
-            insurerInfo[_addr].email = _email;
-            insurerInfo[_addr].exists = true;
+            Insurer storage iinfo = insurerInfo[_addr];
+            iinfo.name = _name;
+            iinfo.email = _email;
+            iinfo.exists = true;
             insurerList.push(_addr);
             emailToAddress[_email] = _addr;
             emailToDesignation[_email] = _designation;
@@ -164,6 +168,13 @@ contract MediChain {
         }
     }
 
+
+    function getPatientDoctorList(address _addr) view public returns (address[] memory){
+        require(_addr != address(0));
+        require(patientInfo[_addr].exists);
+        return (patientInfo[_addr].doctorAccessList);
+    }
+
     function getAllDoctorsAddress() view public returns (address[] memory) {
         return doctorList;
     }
@@ -175,13 +186,17 @@ contract MediChain {
     }
 
     // Called By Patient
-    function permitAccess(address _addr) public {
-        require(_addr != address(0));
+    function permitAccess(string memory _email) public {
+        require(bytes(_email).length > 0);
         require(msg.sender != address(0));
+        address _addr = emailToAddress[_email];
+        require(_addr != address(0));
         require(patientInfo[msg.sender].exists);
         require(doctorInfo[_addr].exists);
-        doctorInfo[_addr].patientAccessList.push(msg.sender);
-        patientInfo[msg.sender].doctorAccessList.push(_addr);
+        Doctor storage dinfo = doctorInfo[_addr];
+        Patient storage pinfo = patientInfo[msg.sender];
+        dinfo.patientAccessList.push(msg.sender);
+        pinfo.doctorAccessList.push(_addr);
     }
 
     // Called By Patient

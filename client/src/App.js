@@ -2,9 +2,7 @@ import { useEffect, useState } from 'react';
 import Web3 from 'web3';
 import { create } from 'ipfs-http-client';
 import { Buffer } from 'buffer';
-// import MediChain from './contracts/MediChain.json';
-import Doctor from './components/Doctors';
-import Patient from './components/Patients';
+import MediChain from './contracts/MediChain.json';
 import Dashboard from './components/Dashboard.js';
 import Login from './components/Login.js';
 import Register from './components/Register.js';
@@ -36,28 +34,27 @@ function App() {
         .catch(error => {
          console.log(error)
         });
-      window.ethereum.on('accountsChanged', () => window.location.reload());
       window.ethereum.on('chainChanged', () => window.location.reload());
 		} else {
 			console.log('Please use Metamask or a Web3 enabled browser');
 		}
   }
 
-  // const getContractInstance = async () => {
-  //   const web3 = new Web3(window.ethereum || Web3.givenProvider || 'http://localhost:7545')
-  //   const networkId = await web3.eth.net.getId()
-  //   const networkData = MediChain.networks[networkId]
-  //   if(networkData){
-  //     const mediChain = new web3.eth.Contract(MediChain.abi, networkData.address)
-  //     setMediChain(mediChain)
-  //     console.log(await mediChain.methods.name().call())
-  //   }else{
-  //     console.log('Please change your network')
-  //   }
-  // }
+  const getContractInstance = async () => {
+    const web3 = new Web3(window.ethereum || Web3.givenProvider || 'http://localhost:7545')
+    const networkId = await web3.eth.net.getId()
+    const networkData = MediChain.networks[networkId]
+    if(networkData){
+      const mediChain = new web3.eth.Contract(MediChain.abi, networkData.address)
+      setMediChain(mediChain)
+      console.log(await mediChain.methods.name().call())
+    }else{
+      console.log('Please change your network')
+    }
+  }
 
   useEffect(() => {
-    // getContractInstance()
+    getContractInstance()
   }, [])
 
   return (
@@ -65,9 +62,7 @@ function App() {
       <SiteNavbar token={token} account={account} setAccount={setAccount} setToken={setToken}/>
       <Routes>
         <Route path='/login' element={<Login mediChain={mediChain} token={token} setToken={setToken} setAccount={setAccount} connectWallet={connectWallet} account={account}/>} />
-        <Route path='/dashboard' element={<Dashboard />} />
-        <Route path='/doctor' element={<Doctor />} />
-        <Route path='/patient' element={<Patient />} />
+        <Route path='/dashboard' element={<Dashboard mediChain={mediChain} token={token} account={account}/>} />
         <Route path='/register' element={<Register mediChain={mediChain} ipfs={ipfs} token={token} setToken={setToken} setAccount={setAccount} connectWallet={connectWallet} account={account} />} />
         
       </Routes>
