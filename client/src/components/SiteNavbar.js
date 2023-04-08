@@ -38,6 +38,11 @@ const SiteNavbar = ({token, account, setAccount, setToken}) => {
                                     Log Out
                                 </small>
                             </Nav.Item>
+                            <Nav.Item onClick={logout}>
+                                <small className=''>
+                                    Doctor
+                                </small>
+                            </Nav.Item>
                         </>
                         : 
                         <>
