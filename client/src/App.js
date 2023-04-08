@@ -3,6 +3,8 @@ import Web3 from 'web3';
 import { create } from 'ipfs-http-client';
 import { Buffer } from 'buffer';
 // import MediChain from './contracts/MediChain.json';
+import Doctor from './components/Doctors';
+import Patient from './components/Patients';
 import Dashboard from './components/Dashboard.js';
 import Login from './components/Login.js';
 import Register from './components/Register.js';
@@ -64,7 +66,10 @@ function App() {
       <Routes>
         <Route path='/login' element={<Login mediChain={mediChain} token={token} setToken={setToken} setAccount={setAccount} connectWallet={connectWallet} account={account}/>} />
         <Route path='/dashboard' element={<Dashboard />} />
+        <Route path='/doctor' element={<Doctor />} />
+        <Route path='/patient' element={<Patient />} />
         <Route path='/register' element={<Register mediChain={mediChain} ipfs={ipfs} token={token} setToken={setToken} setAccount={setAccount} connectWallet={connectWallet} account={account} />} />
+        
       </Routes>
       <Footer/>
     </Router>
