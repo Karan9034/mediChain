@@ -41,7 +41,7 @@ const Login = ({mediChain, connectWallet, token, account, setToken, setAccount})
             var a = localStorage.getItem('account')
             t = t ? t : ""
             a = a ? a : ""
-            if(t!=="" || a!==""){
+            if((t!=="" || a!=="") && (a===account || account==='')){
                 if(t==="1"){
                     mediChain.methods.patientInfo(a).call().then((res) => {
                         if(res.exists){

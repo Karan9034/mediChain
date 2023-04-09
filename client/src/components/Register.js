@@ -7,7 +7,7 @@ const Register = ({mediChain, ipfs, connectWallet, token, account, setToken, set
     const [designation, setDesignation] = useState("1");
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
-    const [age, setAge] = useState(undefined);
+    const [age, setAge] = useState('');
     const navigate = useNavigate();
 
 
@@ -26,13 +26,13 @@ Age: ${age}
                     return;
                 }else{
                     mediChain.methods.register(name, age, parseInt(designation), email, result.path).send({from: account}).on('transactionHash', async (hash) => {
-                        navigate('/login')
+                        window.location.href = '/login'
                     })
                 }
             })
         }else if(account!==""){
-            mediChain.methods.register(name, age, parseInt(designation), email, "").send({from: account}).on('transactionHash', async (hash) => {
-                navigate('/login')
+            mediChain.methods.register(name, 0, parseInt(designation), email, "").send({from: account}).on('transactionHash', async (hash) => {
+                window.location.href = '/login'
             })
         }
     }

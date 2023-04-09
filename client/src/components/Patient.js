@@ -16,6 +16,16 @@ const Patient = ({mediChain, account}) => {
   const getPatientData = async () => {
       var patient = await mediChain.methods.patientInfo(account).call();
       setPatient(patient);
+      console.log(patient)
+  }
+  const getDoctorAccessList = async () => {
+    var doc = await mediChain.methods.getPatientDoctorList(account).call();
+    let dt = [];
+    for(let i=0; i<doc.length; i++){
+      let doctor = await mediChain.methods.doctorInfo(doc[i]).call();
+      dt = [...docList, doctor]
+    }
+    setDocList(dt)
   }
   const giveAccess = (e) => {
     e.preventDefault();
@@ -23,18 +33,17 @@ const Patient = ({mediChain, account}) => {
       return window.location.href = '/login'
     })
   }
-  const getDoctorAccessList = async () => {
-    var doc = await mediChain.methods.getPatientDoctorList(account).call();
-    for(let i=0; i<doc.length; i++){
-      let doctor = await mediChain.methods.doctorInfo(doc[i]).call();
-      setDocList([...docList, doctor])
-    }
+  const revokeAccess = async (email) => {
+    var addr = await mediChain.methods.emailToAddress(email).call();
+    mediChain.methods.revokeAccess(addr).send({from: account}).on('transactionHash', (hash) => {
+      return window.location.href = '/login';
+    });
   }
 
   useEffect(() => {
+    if(account === "") return window.location.href = '/login'
     if(!patient) getPatientData()
     if(docList.length === 0) getDoctorAccessList();
-    console.log(docList)
   }, [patient, docList])
 
   return (
@@ -79,8 +88,8 @@ const Patient = ({mediChain, account}) => {
             <Table striped bordered hover size="sm">
               <thead>
                 <tr>
-                  <th>S.NO</th>
-                  <th>Dcotor's Name</th>
+                  <th>S.No</th>
+                  <th>Doctor's Name</th>
                   <th>Doctor's Email-ID</th>
                   <th>Action</th>
                 </tr>
@@ -93,7 +102,7 @@ const Patient = ({mediChain, account}) => {
                         <td>{idx+1}</td>
                         <td>Dr. {doc.name}</td>
                         <td>{doc.email}</td>
-                        <td><Button >Revoke</Button></td>
+                        <td><Button className='btn-danger' onClick={() => revokeAccess(doc.email)}>Revoke</Button></td>
                       </tr>
                     )
                   })

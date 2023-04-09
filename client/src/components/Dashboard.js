@@ -1,8 +1,13 @@
 import Doctor from "./Doctor.js"
 import Patient from "./Patient.js"
 import Insurer from "./Insurer.js"
+import { useEffect } from "react"
 
 const Dashboard = ({mediChain, token, account}) => {
+
+    useEffect(() => {
+        if(token==="") window.location.href = '/login'
+    })
 
     return (
         <div className="dash">

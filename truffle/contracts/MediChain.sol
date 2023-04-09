@@ -174,6 +174,21 @@ contract MediChain {
         require(patientInfo[_addr].exists);
         return (patientInfo[_addr].doctorAccessList);
     }
+    function getDoctorPatientList(address _addr) view public returns (address[] memory){
+        require(_addr != address(0));
+        require(doctorInfo[_addr].exists);
+        return (doctorInfo[_addr].patientAccessList);
+    }
+    function getInsurerPolicyList(address _addr) view public returns (Policy[] memory) {
+        require(_addr != address(0));
+        require(insurerInfo[_addr].exists);
+        return (insurerInfo[_addr].policies);
+    }
+    function getInsurerPatientList(address _addr) view public returns (address[] memory){
+        require(_addr != address(0));
+        require(insurerInfo[_addr].exists);
+        return (insurerInfo[_addr].patients);
+    }
 
     function getAllDoctorsAddress() view public returns (address[] memory) {
         return doctorList;
@@ -236,7 +251,7 @@ contract MediChain {
     }
 
     // Called by Doctor
-    function insuarnceClaimRequest(address paddr, string memory _hash) payable public {
+    function insuranceClaimRequest(address paddr, string memory _hash) payable public {
         require(msg.sender != address(0));
         require(paddr != address(0));
         require(doctorInfo[msg.sender].exists);
