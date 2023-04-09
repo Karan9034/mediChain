@@ -15,7 +15,6 @@ const Insurer = ({mediChain, account}) => {
     const [polDuration, setPolDuration] = useState('');
     const [polPremium, setPolPremium] = useState('');
     const [showRecord, setShowRecord] = useState(false);
-    const [showModal, setShowModal] = useState(false);
 
     const getInsurerData = async () => {
         var insurer = await mediChain.methods.insurerInfo(account).call();
@@ -25,12 +24,20 @@ const Insurer = ({mediChain, account}) => {
         var pol = await mediChain.methods.getInsurerPolicyList(account).call();
         setPolicyList(pol)
     }
-
-    const createPolicy = async (e) => {
+    const createPolicy = (e) => {
         e.preventDefault()
-        await mediChain.methods.createPolicy(polName, polCoverValue, polDuration, polPremium).send({from: account}).on('transactionHash', (hash) => {
+        mediChain.methods.createPolicy(polName, polCoverValue, polDuration, polPremium).send({from: account}).on('transactionHash', (hash) => {
             return window.location.href = '/login'
         })
+    }
+    const getPatientList = async () => {
+        var pat = await mediChain.methods.getInsurerPatientList(account).call();
+        let pt = [];
+        for(let i=0; i<pat.length; i++){
+            let patient = await mediChain.methods.patientInfo(pat[i]).call();
+            pt = [...pt, patient]
+        }
+        setPatList(pt)
     }
 
 
@@ -51,8 +58,7 @@ const Insurer = ({mediChain, account}) => {
         if(account === "") return window.location.href = '/login'
         if(!insurer) getInsurerData()
         if(policyList.length === 0) getPolicyList();
-        // if(patList.length === 0) getPatientList();
-        console.log(patList)
+        if(patList.length === 0) getPatientList();
     }, [insurer, patList, policyList])
 
 

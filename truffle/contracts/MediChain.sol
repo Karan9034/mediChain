@@ -50,6 +50,7 @@ contract MediChain {
         uint[] transactions;
     }
     struct Policy {
+        uint id;
         address insurer;
         string name;
         uint coverValue;
@@ -220,9 +221,14 @@ contract MediChain {
         require(msg.sender != address(0));
         require(patientInfo[msg.sender].exists);
         require(msg.sender.balance >= msg.value);
-        require(msg.value == policyList[_id].premium);
         payable(policyList[_id].insurer).transfer(msg.value);
-        patientInfo[msg.sender].policy = policyList[_id];
+        patientInfo[msg.sender].policy.id = policyList[_id].id;
+        patientInfo[msg.sender].policy.name = policyList[_id].name;
+        patientInfo[msg.sender].policy.coverValue = policyList[_id].coverValue;
+        patientInfo[msg.sender].policy.insurer = policyList[_id].insurer;
+        patientInfo[msg.sender].policy.timePeriod = policyList[_id].timePeriod;
+        patientInfo[msg.sender].policy.premium = policyList[_id].premium;
+        patientInfo[msg.sender].policyActive = true;
         insurerInfo[policyList[_id].insurer].patients.push(msg.sender);
     }
     
@@ -243,15 +249,13 @@ contract MediChain {
         require(msg.sender == transactions[_id].sender);
         require(!transactions[_id].settled);
         address _addr = transactions[_id].receiver;
-        uint value = transactions[_id].value;
-        require(value == msg.value);
         require(doctorInfo[_addr].exists);
         payable(_addr).transfer(msg.value);
         transactions[_id].settled = true;
     }
 
     // Called by Doctor
-    function insuranceClaimRequest(address paddr, string memory _hash) payable public {
+    function insuranceClaimRequest(address paddr, string memory _hash, uint charges) public {
         require(msg.sender != address(0));
         require(paddr != address(0));
         require(doctorInfo[msg.sender].exists);
@@ -269,21 +273,21 @@ contract MediChain {
         patientInfo[paddr].record = _hash;
         if(patientInfo[paddr].policyActive && patientInfo[paddr].policy.coverValue > 0){
             address iaddr = patientInfo[paddr].policy.insurer;
-            if(patientInfo[paddr].policy.coverValue >= msg.value){
+            if(patientInfo[paddr].policy.coverValue >= charges){
                 transactionCount++;
-                transactions[transactionCount] = Transactions(iaddr, msg.sender, msg.value, false);
+                transactions[transactionCount] = Transactions(iaddr, msg.sender, charges, false);
                 doctorInfo[msg.sender].transactions.push(transactionCount);
                 insurerInfo[iaddr].transactions.push(transactionCount);
-                patientInfo[paddr].policy.coverValue = patientInfo[paddr].policy.coverValue - msg.value;
+                patientInfo[paddr].policy.coverValue = patientInfo[paddr].policy.coverValue - charges;
                 if(patientInfo[paddr].policy.coverValue==0){
                     patientInfo[paddr].policyActive = false;
                 }
                 claimsCount++;
-                claims[claimsCount] = Claims(msg.sender, paddr, iaddr, _hash, msg.value, false, false, transactionCount);
+                claims[claimsCount] = Claims(msg.sender, paddr, iaddr, _hash, charges, false, false, transactionCount);
                 insurerInfo[iaddr].claims.push(claimsCount);
             }else{
                 transactionCount++;
-                transactions[transactionCount] = Transactions(paddr, msg.sender, msg.value-patientInfo[paddr].policy.coverValue, false);
+                transactions[transactionCount] = Transactions(paddr, msg.sender, charges-patientInfo[paddr].policy.coverValue, false);
                 doctorInfo[msg.sender].transactions.push(transactionCount);
                 patientInfo[paddr].transactions.push(transactionCount);
                 transactionCount++;
@@ -298,7 +302,7 @@ contract MediChain {
             }
         }else{
             transactionCount++;
-            transactions[transactionCount] = Transactions(paddr, msg.sender, msg.value, false);
+            transactions[transactionCount] = Transactions(paddr, msg.sender, charges, false);
             doctorInfo[msg.sender].transactions.push(transactionCount);
             patientInfo[paddr].transactions.push(transactionCount);
         }
@@ -312,7 +316,7 @@ contract MediChain {
         require(_timePeriod > 0);
         require(msg.sender != address(0));
         require(insurerInfo[msg.sender].exists);
-        Policy memory pol = Policy(msg.sender, _name, _coverValue, _timePeriod, _premium);
+        Policy memory pol = Policy(policyList.length, msg.sender, _name, _coverValue, _timePeriod, _premium);
         policyList.push(pol);
         insurerInfo[msg.sender].policies.push(pol);
     }
@@ -325,8 +329,6 @@ contract MediChain {
         require(!claims[_id].approved);
         require(!claims[_id].rejected);
         address _addr = claims[_id].doctor;
-        uint value = claims[_id].valueClaimed;
-        require(value == msg.value);
         require(doctorInfo[_addr].exists);
         payable(_addr).transfer(msg.value);
         claims[_id].approved = true;

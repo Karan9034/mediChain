@@ -38,7 +38,7 @@ const Doctor = ({mediChain, account}) => {
     await setShowModal(true);
   }
   const submitDiagnosis = () => {
-    mediChain.methods.insuranceClaimRequest(patient.account, patient.record).send({from: account, value: charges}).on('transactionHash', (hash) => {
+    mediChain.methods.insuranceClaimRequest(patient.account, patient.record, charges).send({from: account}).on('transactionHash', (hash) => {
       return window.location.href = '/login'
     })
   }
