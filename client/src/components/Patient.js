@@ -16,6 +16,7 @@ const Patient = ({mediChain, account, ethValue}) => {
   const [buyFromInsurer, setBuyFromInsurer] = useState(null);
   const [policyList, setPolicyList] = useState([]);
   const [buyPolicyIndex, setBuyPolicyIndex] = useState(null);
+  const [transactionsList, setTransactionsList] = useState([]);
 
   const getPatientData = async () => {
       var patient = await mediChain.methods.patientInfo(account).call();
@@ -65,21 +66,37 @@ const Patient = ({mediChain, account, ethValue}) => {
   const purchasePolicy = async (e) => {
     e.preventDefault();
     var value = policyList[buyPolicyIndex].premium/ethValue;
-    console.log(value)
     mediChain.methods.buyPolicy(parseInt(policyList[buyPolicyIndex].id)).send({from: account, value: Web3.utils.toWei(value.toString(), 'Ether')}).on('transactionHash', (hash) => {
       return window.location.href = '/login'
     })
   }
+  const getTransactionsList = async () => {
+    var transactionsIdList = await mediChain.methods.getPatientTransactions(account).call();
+    let tr = [];
+    for(let i=0; i<transactionsIdList.length; i++){
+        let transaction = await mediChain.methods.transactions(transactionsIdList[i]).call();
+        let doctor = await mediChain.methods.doctorInfo(transaction.receiver).call();
+        transaction = {...transaction, id: transactionsIdList[i], doctorEmail: doctor.email}
+        tr = [...tr, transaction];
+    }
+    setTransactionsList(tr);
+  }
+  const settlePayment = async (e, transaction) => {
+    let value = transaction.value/ethValue;
+      mediChain.methods.settleTransactionsByPatient(transaction.id).send({from: account, value: Web3.utils.toWei(value.toString(), 'Ether')}).on('transactionHash', (hash) => {
+        return window.location.href = '/login'
+    })
+  }
 
   useEffect(() => {
-
     if(account === "") return window.location.href = '/login'
     if(!patient) getPatientData()
     if(docList.length === 0) getDoctorAccessList();
     if(patient?.policyActive) getInsurer();
     if(insurerList.length === 0) getInsurerList();
     if(policyList.length === 0 && buyFromInsurer) getPolicyList();
-  }, [patient, docList, insurerList, buyFromInsurer])
+    if(transactionsList.length === 0) getTransactionsList();
+  }, [patient, docList, insurerList, buyFromInsurer, transactionsList])
 
   return (
     <div>
@@ -215,6 +232,41 @@ const Patient = ({mediChain, account, ethValue}) => {
                 </Form>
               </>
             }
+          </div>
+          <div className='box'>
+            <h2>List of Transactions</h2>
+              <Table striped bordered hover size="sm">
+                <thead>
+                    <tr>
+                      <th>S.No.</th>
+                      <th>Doctor Email</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  { transactionsList.length > 0 ? 
+                    transactionsList.map((transaction, idx) => {
+                      return (
+                        <tr key={idx+1}>
+                          <td>{idx+1}</td>
+                          <td>{transaction.doctorEmail}</td>
+                          <td>{transaction.value}</td>
+                          <td>{transaction.settled ? 'Settled' : "Pending"}</td>
+                          <td>
+                            { !transaction.settled ?
+                              <Button className='btn-success' onClick={(e) => settlePayment(e, transaction)}>Pay</Button>
+                              : <Button className='btn-success' disabled>Pay</Button>
+                            }
+                          </td>
+                        </tr>
+                      )
+                    })
+                    : <></>
+                  }
+                </tbody>
+              </Table>
           </div>
         </>
         : <div>Loading...</div>

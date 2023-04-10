@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
 import { Buffer } from 'buffer';
 
 const Register = ({mediChain, ipfs, connectWallet, token, account, setToken, setAccount}) => {
@@ -8,18 +7,17 @@ const Register = ({mediChain, ipfs, connectWallet, token, account, setToken, set
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [age, setAge] = useState('');
-    const navigate = useNavigate();
-
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if(account!=="" && designation==="1"){
-            var record = Buffer(`Name: ${name}
-Email: ${email}
-Address: ${account}
-Age: ${age}
-
-`);
+            var record = Buffer(JSON.stringify({
+                name: name,
+                email: email,
+                address: account,
+                age: age,
+                treatments: []
+            }));
             ipfs.add(record).then((result, error) => {
                 if(error){
                     console.log(error);
@@ -72,7 +70,7 @@ Age: ${age}
                     <Form.Label>Email</Form.Label>
                     <Form.Control required type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email" />
                 </Form.Group>
-                { designation!=="3" ?
+                { designation==="1" ?
                   <Form.Group className="mb-3" controlId="formAge">
                     <Form.Label>Age</Form.Label>
                     <Form.Control type="number" value={age} min={18} onChange={(e) => setAge(e.target.value)} placeholder="Enter your age" />

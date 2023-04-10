@@ -61,6 +61,7 @@ contract MediChain {
         address doctor;
         address patient;
         address insurer;
+        string policyName;
         string record;
         uint valueClaimed;
         bool approved;
@@ -76,35 +77,12 @@ contract MediChain {
 
     
 
-    // event PatientAdded(
-    //     string name,
-    //     uint age,
-    //     address[] doctorAccessList,
-    //     uint[] diagnosis,
-    //     string record
-    // );
-    // event DoctorAdded(
-    //     string name,
-    //     uint age,
-    //     address[] patientAccessList
-    // );
-    // event InsurerAdded(
-    //     string name,
-    //     uint count_of_patient,
-    //     address[] PatientWhoClaimed,
-    //     address[] DocName,
-    //     uint[] diagnosis
-    // );
     
 
     
 
     constructor(){
         name = "medichain";
-        // countPatients = 0;
-        // countDoctors = 0;
-        // countInsurer = 0;
-        // countPolicy = 0;
         claimsCount = 0;
         transactionCount = 0;
     }
@@ -190,7 +168,21 @@ contract MediChain {
         require(insurerInfo[_addr].exists);
         return (insurerInfo[_addr].patients);
     }
-
+    function getInsurerClaims(address _addr) view public returns (uint[] memory){
+        require(_addr != address(0));
+        require(insurerInfo[_addr].exists);
+        return (insurerInfo[_addr].claims);
+    }
+    function getPatientTransactions(address _addr) view public returns (uint[] memory){
+        require(_addr != address(0));
+        require(patientInfo[_addr].exists);
+        return (patientInfo[_addr].transactions);
+    }
+    function getDoctorTransactions(address _addr) view public returns (uint[] memory){
+        require(_addr != address(0));
+        require(doctorInfo[_addr].exists);
+        return (doctorInfo[_addr].transactions);
+    }
     function getAllDoctorsAddress() view public returns (address[] memory) {
         return doctorList;
     }
@@ -283,7 +275,7 @@ contract MediChain {
                     patientInfo[paddr].policyActive = false;
                 }
                 claimsCount++;
-                claims[claimsCount] = Claims(msg.sender, paddr, iaddr, _hash, charges, false, false, transactionCount);
+                claims[claimsCount] = Claims(msg.sender, paddr, iaddr, patientInfo[paddr].policy.name, _hash, charges, false, false, transactionCount);
                 insurerInfo[iaddr].claims.push(claimsCount);
             }else{
                 transactionCount++;
@@ -295,7 +287,7 @@ contract MediChain {
                 doctorInfo[msg.sender].transactions.push(transactionCount);
                 insurerInfo[iaddr].transactions.push(transactionCount);
                 claimsCount++;
-                claims[claimsCount] = Claims(msg.sender, paddr, iaddr, _hash, patientInfo[paddr].policy.coverValue, false, false, transactionCount);
+                claims[claimsCount] = Claims(msg.sender, paddr, iaddr, patientInfo[paddr].policy.name, _hash, patientInfo[paddr].policy.coverValue, false, false, transactionCount);
                 insurerInfo[iaddr].claims.push(claimsCount);
                 patientInfo[paddr].policy.coverValue = 0;
                 patientInfo[paddr].policyActive = false;
@@ -331,8 +323,10 @@ contract MediChain {
         address _addr = claims[_id].doctor;
         require(doctorInfo[_addr].exists);
         payable(_addr).transfer(msg.value);
-        claims[_id].approved = true;
-        transactions[claims[_id].transactionId].settled = true;
+        Claims storage cl = claims[_id];
+        cl.approved = true;
+        Transactions storage tr = transactions[claims[_id].transactionId];
+        tr.settled = true;
     }
 
     // Called by Insurer
@@ -344,8 +338,11 @@ contract MediChain {
         require(!claims[_id].rejected);
         address _addr = claims[_id].patient;
         require(patientInfo[_addr].exists);
-        claims[_id].rejected = true;
-        transactions[claims[_id].transactionId].sender = _addr;
+        Claims storage cl = claims[_id];
+        cl.rejected = true;
+        Transactions storage tr = transactions[claims[_id].transactionId];
+        tr.sender = _addr;
+        patientInfo[_addr].transactions.push(claims[_id].transactionId);
     }
 
     function removeFromList(address[] storage Array, address addr) internal returns (uint){

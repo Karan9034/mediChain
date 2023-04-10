@@ -15,6 +15,7 @@ const Doctor = ({mediChain, account}) => {
   const [patList, setPatList] = useState([]);
   const [showRecord, setShowRecord] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [transactionsList, setTransactionsList] = useState([]);
 
   const getDoctorData = async () => {
     var doctor = await mediChain.methods.doctorInfo(account).call();
@@ -29,6 +30,19 @@ const Doctor = ({mediChain, account}) => {
       pt = [...pt, patient]
     }
     setPatList(pt);
+  }
+  const getTransactionsList = async () => {
+    var transactionsIdList = await mediChain.methods.getDoctorTransactions(account).call();
+    let tr = [];
+    for(let i=0; i<transactionsIdList.length; i++){
+        let transaction = await mediChain.methods.transactions(transactionsIdList[i]).call();
+        let sender = await mediChain.methods.patientInfo(transaction.sender).call();
+        if(!sender.exists) sender = await mediChain.methods.insurerInfo(transaction.sender).call();
+        transaction = {...transaction, id: transactionsIdList[i], senderEmail: sender.email}
+        tr = [...tr, transaction];
+    }
+    console.log(tr)
+    setTransactionsList(tr);
   }
 
 
@@ -60,8 +74,8 @@ const Doctor = ({mediChain, account}) => {
     if(account === "") return window.location.href = '/login'
     if(!doctor) getDoctorData()
     if(patList.length === 0) getPatientAccessList();
-    console.log(patList)
-  }, [doctor, patList])
+    if(transactionsList.length === 0) getTransactionsList();
+  }, [doctor, patList, transactionsList])
 
 
   return (
@@ -111,6 +125,34 @@ const Doctor = ({mediChain, account}) => {
                 }
               </tbody>
             </Table>
+          </div>
+          <div className='box'>
+            <h2>List of Transactions</h2>
+              <Table striped bordered hover size="sm">
+                <thead>
+                    <tr>
+                      <th>S.No.</th>
+                      <th>Sender Email</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  { transactionsList.length > 0 ? 
+                    transactionsList.map((transaction, idx) => {
+                      return (
+                        <tr key={idx+1}>
+                          <td>{idx+1}</td>
+                          <td>{transaction.senderEmail}</td>
+                          <td>{transaction.value}</td>
+                          <td>{transaction.settled ? 'Settled' : "Pending"}</td>
+                        </tr>
+                      )
+                    })
+                    : <></>
+                  }
+                </tbody>
+              </Table>
           </div>
           { patient ? <Modal id="modal" size="lg" centered show={showModal} onHide={handleCloseModal}>
             <Modal.Header closeButton>

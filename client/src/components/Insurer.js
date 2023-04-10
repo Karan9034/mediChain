@@ -3,10 +3,9 @@ import 'bootstrap/dist/css/bootstrap.css';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table'
-import Modal from 'react-bootstrap/Modal';
+import Web3 from 'web3';
 
-
-const Insurer = ({mediChain, account}) => {
+const Insurer = ({mediChain, account, ethValue}) => {
     const [insurer, setInsurer] = useState(null);
     const [patList, setPatList] = useState([]);
     const [policyList, setPolicyList] = useState([]);
@@ -15,6 +14,8 @@ const Insurer = ({mediChain, account}) => {
     const [polDuration, setPolDuration] = useState('');
     const [polPremium, setPolPremium] = useState('');
     const [showRecord, setShowRecord] = useState(false);
+    const [claimsIdList, setClaimsIdList] = useState([]);
+    const [claimsList, setClaimsList] = useState([]);
 
     const getInsurerData = async () => {
         var insurer = await mediChain.methods.insurerInfo(account).call();
@@ -39,6 +40,29 @@ const Insurer = ({mediChain, account}) => {
         }
         setPatList(pt)
     }
+    const getClaimsData = async () => {
+        var claimsIdList = await mediChain.methods.getInsurerClaims(account).call();
+        let cl = [];
+        for(let i=0; i<claimsIdList.length; i++){
+            let claim = await mediChain.methods.claims(claimsIdList[i]).call();
+            let patient = await mediChain.methods.patientInfo(claim.patient).call();
+            let doctor = await mediChain.methods.doctorInfo(claim.doctor).call();
+            claim = {...claim, id: claimsIdList[i], patientEmail: patient.email, doctorEmail: doctor.email, policyName: claim.policyName}
+            cl = [...cl, claim];
+        }
+        setClaimsList(cl);
+    }
+    const approveClaim = async (e, claim) => {
+        let value = claim.valueClaimed/ethValue;
+        mediChain.methods.approveClaimsByInsurer(claim.id).send({from: account, value: Web3.utils.toWei(value.toString(), 'Ether')}).on('transactionHash', (hash) => {
+            return window.location.href = '/login'
+        })
+    }
+    const rejectClaim = async (e, claim) => {
+        mediChain.methods.rejectClaimsByInsurer(claim.id).send({from: account}).on('transactionHash', (hash) => {
+            return window.location.href = '/login'
+        })
+    }
 
 
     const handleShowRecord = (e, pat) => {
@@ -59,7 +83,8 @@ const Insurer = ({mediChain, account}) => {
         if(!insurer) getInsurerData()
         if(policyList.length === 0) getPolicyList();
         if(patList.length === 0) getPatientList();
-    }, [insurer, patList, policyList])
+        if(claimsIdList.length === 0) getClaimsData();
+    }, [insurer, patList, policyList, claimsIdList])
 
 
     return (
@@ -106,7 +131,7 @@ const Insurer = ({mediChain, account}) => {
                 </div>
                 <div className='box'>
                     <h2>List of Policies</h2>
-                    <Table id='records' striped bordered hover size="sm">
+                    <Table striped bordered hover size="sm">
                         <thead>
                             <tr>
                                 <th>S.No.</th>
@@ -125,7 +150,7 @@ const Insurer = ({mediChain, account}) => {
                                         <td>{pol.name}</td>
                                         <td>INR {pol.coverValue}</td>
                                         <td>INR {pol.premium}/year</td>
-                                        <td>{pol.timePeriod} Years</td>
+                                        <td>{pol.timePeriod} Year{pol.timePeriod >1 ? 's': ''}</td>
                                     </tr>
                                     )
                                 })
@@ -143,7 +168,7 @@ const Insurer = ({mediChain, account}) => {
                                 <th>Customer Name</th>
                                 <th>Customer Email</th>
                                 <th>Policy Name</th>
-                                <th></th>
+                                <th>Records</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -155,7 +180,52 @@ const Insurer = ({mediChain, account}) => {
                                             <td>{pat.name}</td>
                                             <td>{pat.email}</td>
                                             <td>{pat.policyActive ? pat.policy.name : "-"}</td>
-                                            <td>{}</td>
+                                            <td><Button className='btn-secondary' onClick={(e) => handleShowRecord(e, pat)} >View</Button></td>
+                                        </tr>
+                                    )
+                                })
+                                : <></>
+                            }
+                        </tbody>
+                    </Table>
+                </div>
+                <div className='box'>
+                    <h2>List of Claims</h2>
+                    <Table striped bordered hover size="sm">
+                        <thead>
+                            <tr>
+                                <th>S.No.</th>
+                                <th>Patient Email</th>
+                                <th>Doctor Email</th>
+                                <th>Policy Name</th>
+                                <th>Claim Value</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            { claimsList.length > 0 ?
+                                claimsList.map((claim, idx) => {
+                                    return (
+                                        <tr key={idx+1}>
+                                            <td>{idx+1}</td>
+                                            <td>{claim.patientEmail}</td>
+                                            <td>{claim.doctorEmail}</td>
+                                            <td>{claim.policyName}</td>
+                                            <td>INR {claim.valueClaimed}</td>
+                                            <td>{!claim.approved && !claim.rejected ? "Pending" : !claim.approved ? "Rejected" : "Approved" }</td>
+                                            <td>
+                                                { !claim.approved && !claim.rejected ?
+                                                    <>
+                                                        <Button className='btn-success' onClick={(e) => approveClaim(e, claim)} >Approve</Button>
+                                                        <Button className='btn-danger' onClick={(e) => rejectClaim(e, claim)} >Reject</Button>
+                                                    </>
+                                                :   <>
+                                                        <Button className='btn-success' disabled >Approve</Button>
+                                                        <Button className='btn-danger' disabled >Reject</Button>
+                                                    </>
+                                                }
+                                            </td>
                                         </tr>
                                     )
                                 })
