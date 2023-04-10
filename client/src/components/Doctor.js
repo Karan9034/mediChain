@@ -166,7 +166,7 @@ const Doctor = ({mediChain, account}) => {
                   </Form.Group>
                   <Form.Group className='mb-3'>
                     <Form.Label>Treatment: </Form.Label>
-                    <Form.Control required type="textarea" value={treatment} onChange={(e) => setTreatment(e.target.value)} placeholder='Enter the treatment in details'></Form.Control>
+                    <Form.Control required as="textarea" value={treatment} onChange={(e) => setTreatment(e.target.value)} placeholder='Enter the treatment in details'></Form.Control>
                   </Form.Group>
                   <Form.Group className='mb-3'>
                     <Form.Label>Medical Charges: </Form.Label>

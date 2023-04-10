@@ -110,19 +110,19 @@ const Insurer = ({mediChain, account, ethValue}) => {
                     <Form>
                         <Form.Group className='mb-3'>
                             <Form.Label>Policy Name: </Form.Label>
-                            <Form.Control required type="text" value={polName} onChange={(e) => setPolName(e.target.value)} placeholder='Enter disease'></Form.Control>
+                            <Form.Control required type="text" value={polName} onChange={(e) => setPolName(e.target.value)} placeholder='Enter policy name'></Form.Control>
                         </Form.Group>
                         <Form.Group className='mb-3'>
                             <Form.Label>Cover Value: </Form.Label>
-                            <Form.Control required type="number" value={polCoverValue} onChange={(e) => setPolCoverValue(e.target.value)} placeholder='Enter the treatment in details'></Form.Control>
+                            <Form.Control required type="number" value={polCoverValue} onChange={(e) => setPolCoverValue(e.target.value)} placeholder='Enter the cover value in INR'></Form.Control>
                         </Form.Group>
                         <Form.Group className='mb-3'>
                             <Form.Label>Yearly Premium: </Form.Label>
-                            <Form.Control required type="number" value={polPremium} onChange={(e) => setPolPremium(e.target.value)} placeholder='Enter medical charges incurred'></Form.Control>
+                            <Form.Control required type="number" value={polPremium} onChange={(e) => setPolPremium(e.target.value)} placeholder='Enter the annual premium in INR'></Form.Control>
                         </Form.Group>
                         <Form.Group className='mb-3'>
                             <Form.Label>Policy Period (in years): </Form.Label>
-                            <Form.Control required type="number" max={3} min={1} value={polDuration} onChange={(e) => setPolDuration(e.target.value)} placeholder='Enter medical charges incurred'></Form.Control>
+                            <Form.Control required type="number" max={3} min={1} value={polDuration} onChange={(e) => setPolDuration(e.target.value)} placeholder='Enter policy duration'></Form.Control>
                         </Form.Group>
                         <Button type="submit" variant="primary" onClick={createPolicy}>
                             Create Policy
