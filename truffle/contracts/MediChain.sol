@@ -343,6 +343,11 @@ contract MediChain {
         Transactions storage tr = transactions[claims[_id].transactionId];
         tr.sender = _addr;
         patientInfo[_addr].transactions.push(claims[_id].transactionId);
+        Policy storage pol = patientInfo[_addr].policy;
+        if(!patientInfo[_addr].policyActive){
+            patientInfo[_addr].policyActive = true;
+        }
+        pol.coverValue += claims[_id].valueClaimed;
     }
 
     function removeFromList(address[] storage Array, address addr) internal returns (uint){

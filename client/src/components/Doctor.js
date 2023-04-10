@@ -61,9 +61,13 @@ const Doctor = ({mediChain, account}) => {
       var table = document.getElementById('records');
       var idx = e.target.parentNode.parentNode.rowIndex;
       if(!showRecord){
-        var row = table.insertRow(idx+1);
-        row.innerHTML = "Yo"
-        setShowRecord(true);
+        fetch(`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${pat.record}`)
+          .then(res => res.json())
+          .then(data => {
+            var row = table.insertRow(idx+1);
+            row.innerHTML = data.name+" "+data.email
+            setShowRecord(true);
+          })
       }else{
         table.deleteRow(idx + 1);
         setShowRecord(false);

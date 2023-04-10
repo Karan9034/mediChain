@@ -182,7 +182,7 @@ const Patient = ({mediChain, account, ethValue}) => {
                     <Form.Label>Insurance Duration: {patient.policy.timePeriod} Year{patient.policy.timePeriod >1 ? 's': ''}</Form.Label>
                   </Form.Group>
                   <Form.Group>
-                    <Form.Label>Cover Value: INR {patient.policy.coverValue}</Form.Label>
+                    <Form.Label>Remaining Cover Value: INR {patient.policy.coverValue}</Form.Label>
                   </Form.Group>
                   <Form.Group>
                     <Form.Label>Premium: INR {patient.policy.premium}/year</Form.Label>
