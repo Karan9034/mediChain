@@ -2,8 +2,12 @@ import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 import Table from 'react-bootstrap/Table'
+import Dropdown from 'react-bootstrap/Dropdown'
+import DropdownButton from 'react-bootstrap/DropdownButton'
 import Web3 from 'web3';
+import {Link} from 'react-router-dom'
 
 const Insurer = ({mediChain, account, ethValue}) => {
     const [insurer, setInsurer] = useState(null);
@@ -16,7 +20,9 @@ const Insurer = ({mediChain, account, ethValue}) => {
     const [showRecord, setShowRecord] = useState(false);
     const [claimsIdList, setClaimsIdList] = useState([]);
     const [claimsList, setClaimsList] = useState([]);
-
+    const [showRecordModal, setShowRecordModal] = useState(false);
+    const [patientRecord, setPatientRecord] = useState(null);
+  
     const getInsurerData = async () => {
         var insurer = await mediChain.methods.insurerInfo(account).call();
         setInsurer(insurer);
@@ -31,6 +37,15 @@ const Insurer = ({mediChain, account, ethValue}) => {
             return window.location.href = '/login'
         })
     }
+    const handleCloseRecordModal = () => setShowRecordModal(false);
+    const handleShowRecordModal = async (e, patient) => {
+        var record = {}
+        await fetch(`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${patient.record}`)
+            .then(res => res.json())
+            .then(data => record = data)
+        await setPatientRecord(record);
+        await setShowRecordModal(true);
+    }
     const getPatientList = async () => {
         var pat = await mediChain.methods.getInsurerPatientList(account).call();
         let pt = [];
@@ -43,7 +58,7 @@ const Insurer = ({mediChain, account, ethValue}) => {
     const getClaimsData = async () => {
         var claimsIdList = await mediChain.methods.getInsurerClaims(account).call();
         let cl = [];
-        for(let i=0; i<claimsIdList.length; i++){
+        for(let i=claimsIdList.length-1; i>=0; i--){
             let claim = await mediChain.methods.claims(claimsIdList[i]).call();
             let patient = await mediChain.methods.patientInfo(claim.patient).call();
             let doctor = await mediChain.methods.doctorInfo(claim.doctor).call();
@@ -180,7 +195,7 @@ const Insurer = ({mediChain, account, ethValue}) => {
                                             <td>{pat.name}</td>
                                             <td>{pat.email}</td>
                                             <td>{pat.policyActive ? pat.policy.name : "-"}</td>
-                                            <td><Button className='btn-secondary' onClick={(e) => handleShowRecord(e, pat)} >View</Button></td>
+                                            <td><Button className='btn-secondary' onClick={(e) => handleShowRecordModal(e, pat)} >View</Button></td>
                                         </tr>
                                     )
                                 })
@@ -213,16 +228,18 @@ const Insurer = ({mediChain, account, ethValue}) => {
                                             <td>{claim.doctorEmail}</td>
                                             <td>{claim.policyName}</td>
                                             <td>INR {claim.valueClaimed}</td>
-                                            <td>{!claim.approved && !claim.rejected ? "Pending" : !claim.approved ? "Rejected" : "Approved" }</td>
+                                            <td>{!claim.approved && !claim.rejected ? <span className='badge rounded-pill bg-warning'>Pending</span> : !claim.approved ? <span className='badge rounded-pill bg-danger'>Rejected</span>  : <span className='badge rounded-pill bg-success'>Accepted</span>  }</td>
                                             <td>
                                                 { !claim.approved && !claim.rejected ?
-                                                    <>
-                                                        <Button className='btn-success' onClick={(e) => approveClaim(e, claim)} >Approve</Button>
-                                                        <Button className='btn-danger' onClick={(e) => rejectClaim(e, claim)} >Reject</Button>
-                                                    </>
+                                                    <DropdownButton title="Action" variant='secondary'>
+                                                        <Dropdown.Item onClick={(e) => approveClaim(e, claim)} >Approve</Dropdown.Item>
+                                                        <Dropdown.Item onClick={(e) => rejectClaim(e, claim)} >Reject</Dropdown.Item>
+                                                    </DropdownButton>
                                                 :   <>
-                                                        <Button className='btn-success' disabled >Approve</Button>
-                                                        <Button className='btn-danger' disabled >Reject</Button>
+                                                        <DropdownButton title="Action" disabled variant='secondary'>
+                                                            <Dropdown.Item onClick={(e) => approveClaim(e, claim)} >Approve</Dropdown.Item>
+                                                            <Dropdown.Item onClick={(e) => rejectClaim(e, claim)} >Reject</Dropdown.Item>
+                                                        </DropdownButton>
                                                     </>
                                                 }
                                             </td>
@@ -234,9 +251,70 @@ const Insurer = ({mediChain, account, ethValue}) => {
                         </tbody>
                     </Table>
                 </div>
-            </>
-            : <div>Loading...</div>
-        }
+                    { patientRecord ? <Modal id="modal" size="lg" centered show={showRecordModal} onHide={handleCloseRecordModal}>
+                        <Modal.Header closeButton>
+                            <Modal.Title id="modalTitle">Medical Record:</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <Form>
+                            <Form.Group>
+                                <Form.Label>Patient Name: {patientRecord.name}</Form.Label>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Patient Email: {patientRecord.email}</Form.Label>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Patient Age: {patientRecord.age}</Form.Label>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Address: {patientRecord.address}</Form.Label>
+                            </Form.Group>
+                            <Table id='records' striped bordered hover size="sm">
+                                <thead>
+                                    <tr>
+                                        <th>Sr.&nbsp;No.</th>
+                                        <th>Doctor Email</th>
+                                        <th>Date</th>
+                                        <th>Disease</th>
+                                        <th>Treatment</th>
+                                        <th>Prescription</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    { patientRecord.treatments.length > 0 ?
+                                        patientRecord.treatments.map((treatment, idx) => {
+                                            return (
+                                            <tr key={idx+1}>
+                                                <td>{idx+1}</td>
+                                                <td>{treatment.doctorEmail}</td>
+                                                <td>{treatment.date}</td>
+                                                <td>{treatment.disease}</td>
+                                                <td>{treatment.treatment}</td>
+                                                <td>
+                                                    { treatment.prescription ? 
+                                                        <Link to={`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${treatment.prescription}`} target="_blank"><Button>View</Button></Link>
+                                                        : "No document uploaded"
+                                                    }
+                                                </td>
+                                            </tr>
+                                            )
+                                        })
+                                        : <></>
+                                    }
+                                </tbody>
+                            </Table>
+                            </Form>
+                        </Modal.Body>
+                        <Modal.Footer>
+                        <Button variant="secondary" onClick={handleCloseRecordModal}>
+                            Close
+                        </Button>
+                        </Modal.Footer>
+                    </Modal> : <></>
+                    }
+                </>
+                : <div>Loading...</div>
+            }
         </div>
     )
 }

@@ -62,7 +62,7 @@ function App() {
       <SiteNavbar token={token} account={account} setAccount={setAccount} setToken={setToken}/>
       <Routes>
         <Route path='/login' element={<Login mediChain={mediChain} token={token} setToken={setToken} setAccount={setAccount} connectWallet={connectWallet} account={account}/>} />
-        <Route path='/dashboard' element={<Dashboard mediChain={mediChain} token={token} account={account}/>} />
+        <Route path='/dashboard' element={<Dashboard mediChain={mediChain} token={token} account={account} ipfs={ipfs}/>} />
         <Route path='/register' element={<Register mediChain={mediChain} ipfs={ipfs} token={token} setToken={setToken} setAccount={setAccount} connectWallet={connectWallet} account={account} />} />
         
       </Routes>

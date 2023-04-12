@@ -4,17 +4,21 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table'
 import Modal from 'react-bootstrap/Modal';
+import { Buffer } from 'buffer';
+import { Link } from 'react-router-dom'
 
 
-const Doctor = ({mediChain, account}) => {
+const Doctor = ({ipfs, mediChain, account}) => {
   const [doctor, setDoctor] = useState(null);
   const [patient, setPatient] = useState(null);
+  const [patientRecord, setPatientRecord] = useState(null);
   const [disease, setDisease] = useState('');
   const [treatment, setTreatment] = useState('');
   const [charges, setCharges] = useState('');
+  const [fileBuffer, setFileBuffer] = useState(null);
   const [patList, setPatList] = useState([]);
-  const [showRecord, setShowRecord] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showRecordModal, setShowRecordModal] = useState(false);
   const [transactionsList, setTransactionsList] = useState([]);
 
   const getDoctorData = async () => {
@@ -34,45 +38,81 @@ const Doctor = ({mediChain, account}) => {
   const getTransactionsList = async () => {
     var transactionsIdList = await mediChain.methods.getDoctorTransactions(account).call();
     let tr = [];
-    for(let i=0; i<transactionsIdList.length; i++){
+    for(let i=transactionsIdList.length-1; i>=0; i--){
         let transaction = await mediChain.methods.transactions(transactionsIdList[i]).call();
         let sender = await mediChain.methods.patientInfo(transaction.sender).call();
         if(!sender.exists) sender = await mediChain.methods.insurerInfo(transaction.sender).call();
         transaction = {...transaction, id: transactionsIdList[i], senderEmail: sender.email}
         tr = [...tr, transaction];
     }
-    console.log(tr)
     setTransactionsList(tr);
+  }
+  const captureFile = async (e) => {
+    e.preventDefault()
+    const file = e.target.files[0];
+    const reader = new window.FileReader()
+    reader.readAsArrayBuffer(file)
+    reader.onloadend = () => {
+      setFileBuffer(Buffer(reader.result))
+    }
   }
 
 
   const handleCloseModal = () => setShowModal(false);
+  const handleCloseRecordModal = () => setShowRecordModal(false);
   const handleShowModal = async (patient) => {
     await setPatient(patient);
     await setShowModal(true);
   }
-  const submitDiagnosis = () => {
-    mediChain.methods.insuranceClaimRequest(patient.account, patient.record, charges).send({from: account}).on('transactionHash', (hash) => {
-      return window.location.href = '/login'
+  const handleShowRecordModal = async (patient) => {
+    var record = {}
+    await fetch(`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${patient.record}`)
+      .then(res => res.json())
+      .then(data => record = data)
+    await setPatientRecord(record);
+    await setShowRecordModal(true);
+  }
+  const submitDiagnosis = async (e) => {
+    e.preventDefault()
+    let file = "";
+    if(fileBuffer) {
+      await ipfs.add(fileBuffer).then((res, error) => {
+        if(error){
+          console.log(error)
+        }else{
+          file = res.path
+        }
+      })
+    }
+    var record = {}
+    await fetch(`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${patient.record}`)
+      .then(res => res.json())
+      .then(data => {
+        record = data;
+      })
+    const date = new Date();
+
+    const formattedDate = date.toLocaleString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit"
+    });
+    record.treatments = [ {disease, treatment, charges, prescription: file, date: formattedDate, doctorEmail: doctor.email}, ...record.treatments ]
+    record = Buffer(JSON.stringify(record))
+    ipfs.add(record).then((result, error) => {
+      if(error){
+        console.log(error);
+        return;
+      }else{
+        mediChain.methods.insuranceClaimRequest(patient.account, result.path, charges).send({from: account}).on('transactionHash', (hash) => {
+          return window.location.href = '/login'
+        })
+      }
     })
   }
 
-  const handleShowRecord = (e, pat) => {
-      var table = document.getElementById('records');
-      var idx = e.target.parentNode.parentNode.rowIndex;
-      if(!showRecord){
-        fetch(`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${pat.record}`)
-          .then(res => res.json())
-          .then(data => {
-            var row = table.insertRow(idx+1);
-            row.innerHTML = data.name+" "+data.email
-            setShowRecord(true);
-          })
-      }else{
-        table.deleteRow(idx + 1);
-        setShowRecord(false);
-      }
-  }
 
   useEffect(() => {
     if(account === "") return window.location.href = '/login'
@@ -121,7 +161,7 @@ const Doctor = ({mediChain, account}) => {
                         <td>{pat.name}</td>
                         <td>{pat.email}</td>
                         <td><Button onClick={(e) => handleShowModal(pat)} >Diagnose</Button></td>
-                        <td><Button className='btn-secondary' onClick={(e) => handleShowRecord(e, pat)} >View</Button></td>
+                        <td><Button className='btn-secondary' onClick={(e) => handleShowRecordModal(pat)} >View</Button></td>
                       </tr>
                     )
                   })
@@ -176,6 +216,10 @@ const Doctor = ({mediChain, account}) => {
                     <Form.Label>Medical Charges: </Form.Label>
                     <Form.Control required type="number" value={charges} onChange={(e) => setCharges(e.target.value)} placeholder='Enter medical charges incurred'></Form.Control>
                   </Form.Group>
+                  <Form.Group className='mb-3'>
+                    <Form.Label>Upload Prescription</Form.Label>
+                    <Form.Control onChange={captureFile} accept=".jpg, .jpeg, .png, .pdf" type="file" />
+                  </Form.Group>
                 </Form>
             </Modal.Body>
             <Modal.Footer>
@@ -184,6 +228,67 @@ const Doctor = ({mediChain, account}) => {
               </Button>
               <Button type="submit" variant="primary" onClick={submitDiagnosis}>
                 Submit Diagnosis
+              </Button>
+            </Modal.Footer>
+          </Modal> : <></>
+          }
+          { patientRecord ? <Modal id="modal" size="lg" centered show={showRecordModal} onHide={handleCloseRecordModal}>
+            <Modal.Header closeButton>
+              <Modal.Title id="modalTitle">Medical Record:</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Form>
+                  <Form.Group>
+                    <Form.Label>Patient Name: {patientRecord.name}</Form.Label>
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Label>Patient Email: {patientRecord.email}</Form.Label>
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Label>Patient Age: {patientRecord.age}</Form.Label>
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Label>Address: {patientRecord.address}</Form.Label>
+                  </Form.Group>
+                  <Table id='records' striped bordered hover size="sm">
+                    <thead>
+                      <tr>
+                        <th>Sr.&nbsp;No.</th>
+                        <th>Doctor Email</th>
+                        <th>Date</th>
+                        <th>Disease</th>
+                        <th>Treatment</th>
+                        <th>Prescription</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      { patientRecord.treatments.length > 0 ?
+                          patientRecord.treatments.map((treatment, idx) => {
+                            return (
+                              <tr key={idx+1}>
+                                <td>{idx+1}</td>
+                                <td>{treatment.doctorEmail}</td>
+                                <td>{treatment.date}</td>
+                                <td>{treatment.disease}</td>
+                                <td>{treatment.treatment}</td>
+                                <td>
+                                  { treatment.prescription ? 
+                                    <Link to={`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${treatment.prescription}`} target="_blank"><Button>View</Button></Link>
+                                    : "No document uploaded"
+                                  }
+                                </td>
+                              </tr>
+                            )
+                          })
+                        : <></>
+                      }
+                    </tbody>
+                  </Table>
+                </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleCloseRecordModal}>
+                Close
               </Button>
             </Modal.Footer>
           </Modal> : <></>

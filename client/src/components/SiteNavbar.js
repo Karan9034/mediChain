@@ -35,7 +35,7 @@ const SiteNavbar = ({token, account, setAccount, setToken}) => {
                             </Nav.Link>
                             <Nav.Link onClick={logout}>
                                 <small className='text-nav'>
-                                    Log Out
+                                    Log&nbsp;Out
                                 </small>
                             </Nav.Link>
                         </>

@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table'
+import Modal from 'react-bootstrap/Modal'
 import { Link } from 'react-router-dom'
 import Web3 from 'web3'
 
@@ -17,6 +18,8 @@ const Patient = ({mediChain, account, ethValue}) => {
   const [policyList, setPolicyList] = useState([]);
   const [buyPolicyIndex, setBuyPolicyIndex] = useState(null);
   const [transactionsList, setTransactionsList] = useState([]);
+  const [showRecordModal, setShowRecordModal] = useState(false);
+  const [patientRecord, setPatientRecord] = useState(null);
 
   const getPatientData = async () => {
       var patient = await mediChain.methods.patientInfo(account).call();
@@ -73,7 +76,7 @@ const Patient = ({mediChain, account, ethValue}) => {
   const getTransactionsList = async () => {
     var transactionsIdList = await mediChain.methods.getPatientTransactions(account).call();
     let tr = [];
-    for(let i=0; i<transactionsIdList.length; i++){
+    for(let i=transactionsIdList.length-1; i>=0; i--){
         let transaction = await mediChain.methods.transactions(transactionsIdList[i]).call();
         let doctor = await mediChain.methods.doctorInfo(transaction.receiver).call();
         transaction = {...transaction, id: transactionsIdList[i], doctorEmail: doctor.email}
@@ -86,6 +89,16 @@ const Patient = ({mediChain, account, ethValue}) => {
       mediChain.methods.settleTransactionsByPatient(transaction.id).send({from: account, value: Web3.utils.toWei(value.toString(), 'Ether')}).on('transactionHash', (hash) => {
         return window.location.href = '/login'
     })
+  }
+
+  const handleCloseRecordModal = () => setShowRecordModal(false);
+  const handleShowRecordModal = async () => {
+    var record = {}
+    await fetch(`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${patient.record}`)
+      .then(res => res.json())
+      .then(data => record = data)
+    await setPatientRecord(record);
+    await setShowRecordModal(true);
   }
 
   useEffect(() => {
@@ -120,7 +133,7 @@ const Patient = ({mediChain, account, ethValue}) => {
             </Form>
             <div>
               <span>Your records are stored here: &nbsp; &nbsp;</span>
-              <Link to={`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${patient.record}`} target='_blank'><Button style={{width: "20%", height: "4vh"}} >View Records</Button></Link>
+              <Button style={{width: "20%", height: "4vh"}} onClick={handleShowRecordModal}>View Records</Button>
             </div>
           </div>
           <div className='box'>
@@ -134,9 +147,8 @@ const Patient = ({mediChain, account, ethValue}) => {
                   Submit
               </Button>
             </Form>
-          </div>
-          <div className='box'>
-            <h2>List of Doctor's you have given access to your medical records</h2>
+            <br />
+            <h4>List of Doctor's you have given access to your medical records</h4>
             <Table striped bordered hover size="sm">
               <thead>
                 <tr>
@@ -268,6 +280,67 @@ const Patient = ({mediChain, account, ethValue}) => {
                 </tbody>
               </Table>
           </div>
+          { patientRecord ? <Modal id="modal" size="lg" centered show={showRecordModal} onHide={handleCloseRecordModal}>
+            <Modal.Header closeButton>
+              <Modal.Title id="modalTitle">Medical Record:</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Form>
+                  <Form.Group>
+                    <Form.Label>Patient Name: {patientRecord.name}</Form.Label>
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Label>Patient Email: {patientRecord.email}</Form.Label>
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Label>Patient Age: {patientRecord.age}</Form.Label>
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Label>Address: {patientRecord.address}</Form.Label>
+                  </Form.Group>
+                  <Table id='records' striped bordered hover size="sm">
+                    <thead>
+                      <tr>
+                        <th>Sr.&nbsp;No.</th>
+                        <th>Doctor Email</th>
+                        <th>Date</th>
+                        <th>Disease</th>
+                        <th>Treatment</th>
+                        <th>Prescription</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      { patientRecord.treatments.length > 0 ?
+                          patientRecord.treatments.map((treatment, idx) => {
+                            return (
+                              <tr key={idx+1}>
+                                <td>{idx+1}</td>
+                                <td>{treatment.doctorEmail}</td>
+                                <td>{treatment.date}</td>
+                                <td>{treatment.disease}</td>
+                                <td>{treatment.treatment}</td>
+                                <td>
+                                  { treatment.prescription ? 
+                                    <Link to={`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${treatment.prescription}`} target="_blank"><Button>View</Button></Link>
+                                    : "No document uploaded"
+                                  }
+                                </td>
+                              </tr>
+                            )
+                          })
+                        : <></>
+                      }
+                    </tbody>
+                  </Table>
+                </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleCloseRecordModal}>
+                Close
+              </Button>
+            </Modal.Footer>
+          </Modal> : <></>
+          }
         </>
         : <div>Loading...</div>
       }
