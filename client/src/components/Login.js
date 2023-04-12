@@ -91,20 +91,22 @@ const Login = ({mediChain, connectWallet, token, account, setToken, setAccount})
 
     return (
         <div className='main'>
-            <h2>Login</h2>
-            <br />
-            <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3" controlId="formWallet">
-                    <Form.Label>Connect Wallet</Form.Label>
-                    { account === "" ?
-                      <Form.Control type="button" value="Connect to Metamask" onClick={connectWallet}/>
-                    : <Form.Control type="button" disabled value={`Connected Wallet with Address: ${account}`}/>
-                    }
-                </Form.Group>
-                <Button variant="primary" type="submit">
-                    Submit
-                </Button>
-            </Form>
+            <div className='box'>
+                <h2>Login</h2>
+                <br />
+                <Form onSubmit={handleSubmit}>
+                    <Form.Group className="mb-3" controlId="formWallet">
+                        <Form.Label>Connect Wallet</Form.Label>
+                        { account === "" ?
+                        <Form.Control type="button" value="Connect to Metamask" onClick={connectWallet}/>
+                        : <Form.Control type="button" disabled value={`Connected Wallet with Address: ${account}`}/>
+                        }
+                    </Form.Group>
+                    <Button variant="primary" type="submit">
+                        Submit
+                    </Button>
+                </Form>
+            </div>
         </div>
     )
 }

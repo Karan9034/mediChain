@@ -145,9 +145,9 @@ const Doctor = ({ipfs, mediChain, account}) => {
             <Table id='records' striped bordered hover size="sm">
               <thead>
                 <tr>
-                  <th>S.NO</th>
-                  <th>Patient Name</th>
-                  <th>Patient Email</th>
+                  <th>Sr.&nbsp;No.</th>
+                  <th>Patient&nbsp;Name</th>
+                  <th>Patient&nbsp;Email</th>
                   <th>Action</th>
                   <th>Records</th>
                 </tr>
@@ -175,8 +175,8 @@ const Doctor = ({ipfs, mediChain, account}) => {
               <Table striped bordered hover size="sm">
                 <thead>
                     <tr>
-                      <th>S.No.</th>
-                      <th>Sender Email</th>
+                      <th>Sr.&nbsp;No.</th>
+                      <th>Sender&nbsp;Email</th>
                       <th>Amount</th>
                       <th>Status</th>
                     </tr>
@@ -254,7 +254,7 @@ const Doctor = ({ipfs, mediChain, account}) => {
                     <thead>
                       <tr>
                         <th>Sr.&nbsp;No.</th>
-                        <th>Doctor Email</th>
+                        <th>Doctor&nbsp;Email</th>
                         <th>Date</th>
                         <th>Disease</th>
                         <th>Treatment</th>

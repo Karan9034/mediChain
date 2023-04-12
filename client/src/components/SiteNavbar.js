@@ -13,17 +13,12 @@ const SiteNavbar = ({token, account, setAccount, setToken}) => {
         navigate('/login');
     }
     return (
-        <Navbar collapseOnSelect expand="md" variant="dark" bg='primary' fixed="top" className="site-navbar">
+        <Navbar collapseOnSelect expand="md" variant="dark" bg='coolColor' fixed="top" className="site-navbar">
             <Container>
                 <Navbar.Brand as={Link} to="/">MediChain</Navbar.Brand>
                 <Nav justify>
                     { token!=='' && account!=="" ? 
                         <>
-                            <Nav.Link>
-                                <small className='text-nav'>
-                                    {account.slice(0, 5)+ '...' + account.slice(-4)}
-                                </small>
-                            </Nav.Link>
                             <Nav.Link className='img'>
                                 <img
                                     className='ml-2'
@@ -32,6 +27,11 @@ const SiteNavbar = ({token, account, setAccount, setToken}) => {
                                     src={`data:image/png;base64,${new Identicon(account, 40).toString()}`}
                                     alt="profile"
                                 />
+                            </Nav.Link>
+                            <Nav.Link>
+                                <small className='text-nav'>
+                                    {account.slice(0, 5)+ '...' + account.slice(-4)}
+                                </small>
                             </Nav.Link>
                             <Nav.Link onClick={logout}>
                                 <small className='text-nav'>

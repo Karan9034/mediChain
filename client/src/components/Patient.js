@@ -152,9 +152,9 @@ const Patient = ({mediChain, account, ethValue}) => {
             <Table striped bordered hover size="sm">
               <thead>
                 <tr>
-                  <th>S.No</th>
-                  <th>Doctor's Name</th>
-                  <th>Doctor's Email-ID</th>
+                  <th>Sr.&nbsp;No.</th>
+                  <th>Doctor&nbsp;Name</th>
+                  <th>Doctor&nbsp;Email</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -250,8 +250,8 @@ const Patient = ({mediChain, account, ethValue}) => {
               <Table striped bordered hover size="sm">
                 <thead>
                     <tr>
-                      <th>S.No.</th>
-                      <th>Doctor Email</th>
+                      <th>Sr.No.</th>
+                      <th>Doctor&nbsp;Email</th>
                       <th>Amount</th>
                       <th>Status</th>
                       <th>Action</th>
@@ -302,7 +302,7 @@ const Patient = ({mediChain, account, ethValue}) => {
                     <thead>
                       <tr>
                         <th>Sr.&nbsp;No.</th>
-                        <th>Doctor Email</th>
+                        <th>Doctor&nbsp;Email</th>
                         <th>Date</th>
                         <th>Disease</th>
                         <th>Treatment</th>

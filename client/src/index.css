@@ -16,6 +16,7 @@ body {
     sans-serif; */
   /* -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale; */
+  /* background-color: #b1c7e4 !important; */
 }
 
 .main{
@@ -31,6 +32,9 @@ body {
   margin-right: 25%;
 }
 
+.bg-coolColor{
+  background-color: #09335E !important;
+}
 nav {
   height: 5rem;
   padding: 0 3rem !important;
@@ -38,6 +42,10 @@ nav {
 .navbar-brand{
   font-size: 1.3rem !important;
   cursor: pointer;
+}
+.navbar-nav{
+  display: flex;
+  align-items: center;
 }
 .nav-link, .nav-item{
   padding-top: 1rem;
@@ -49,6 +57,7 @@ nav {
 .text-nav{
   margin-right: 2rem;
   font-size: 1rem;
+
 }
 
 .box{
@@ -56,5 +65,14 @@ nav {
   border-radius: 10px;
   padding: 2vh 1vw;
   margin-bottom: 5vh;
-  background-color: #fafafa;
+  background-color: #D5F3FE !important;
+  box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
+}
+.box h2 {
+  position: relative;
+  border-radius: 6px;
+  color: #12294e !important;
+  padding: 1vh 1vw;
+  font-weight: 400;
+  margin-bottom: 2vh;
 }

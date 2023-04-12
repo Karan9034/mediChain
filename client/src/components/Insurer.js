@@ -149,11 +149,11 @@ const Insurer = ({mediChain, account, ethValue}) => {
                     <Table striped bordered hover size="sm">
                         <thead>
                             <tr>
-                                <th>S.No.</th>
-                                <th>Policy Name</th>
-                                <th>Policy Cover</th>
-                                <th>Policy Premium</th>
-                                <th>Policy Duration</th>
+                                <th>Sr.&nbsp;No.</th>
+                                <th>Policy&nbsp;Name</th>
+                                <th>Policy&nbsp;Cover</th>
+                                <th>Policy&nbsp;Premium</th>
+                                <th>Policy&nbsp;Duration</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -179,10 +179,10 @@ const Insurer = ({mediChain, account, ethValue}) => {
                     <Table id='records' striped bordered hover size="sm">
                         <thead>
                             <tr>
-                                <th>S.No.</th>
-                                <th>Customer Name</th>
-                                <th>Customer Email</th>
-                                <th>Policy Name</th>
+                                <th>Sr.&nbsp;No.</th>
+                                <th>Customer&nbsp;Name</th>
+                                <th>Customer&nbsp;Email</th>
+                                <th>Policy&nbsp;Name</th>
                                 <th>Records</th>
                             </tr>
                         </thead>
@@ -209,11 +209,11 @@ const Insurer = ({mediChain, account, ethValue}) => {
                     <Table striped bordered hover size="sm">
                         <thead>
                             <tr>
-                                <th>S.No.</th>
-                                <th>Patient Email</th>
-                                <th>Doctor Email</th>
-                                <th>Policy Name</th>
-                                <th>Claim Value</th>
+                                <th>Sr.&nbsp;No.</th>
+                                <th>Patient&nbsp;Email</th>
+                                <th>Doctor&nbsp;Email</th>
+                                <th>Policy&nbsp;Name</th>
+                                <th>Claim&nbsp;Value</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -273,7 +273,7 @@ const Insurer = ({mediChain, account, ethValue}) => {
                                 <thead>
                                     <tr>
                                         <th>Sr.&nbsp;No.</th>
-                                        <th>Doctor Email</th>
+                                        <th>Doctor&nbsp;Email</th>
                                         <th>Date</th>
                                         <th>Disease</th>
                                         <th>Treatment</th>
