@@ -139,7 +139,7 @@ const Insurer = ({mediChain, account, ethValue}) => {
                             <Form.Label>Policy Period (in years): </Form.Label>
                             <Form.Control required type="number" max={3} min={1} value={polDuration} onChange={(e) => setPolDuration(e.target.value)} placeholder='Enter policy duration'></Form.Control>
                         </Form.Group>
-                        <Button type="submit" variant="primary" onClick={createPolicy}>
+                        <Button type="submit" variant="coolColor" onClick={createPolicy}>
                             Create Policy
                         </Button>
                     </Form>
@@ -195,7 +195,7 @@ const Insurer = ({mediChain, account, ethValue}) => {
                                             <td>{pat.name}</td>
                                             <td>{pat.email}</td>
                                             <td>{pat.policyActive ? pat.policy.name : "-"}</td>
-                                            <td><Button className='btn-secondary' onClick={(e) => handleShowRecordModal(e, pat)} >View</Button></td>
+                                            <td><Button variant="coolColor" onClick={(e) => handleShowRecordModal(e, pat)} >View</Button></td>
                                         </tr>
                                     )
                                 })
@@ -231,12 +231,12 @@ const Insurer = ({mediChain, account, ethValue}) => {
                                             <td>{!claim.approved && !claim.rejected ? <span className='badge rounded-pill bg-warning'>Pending</span> : !claim.approved ? <span className='badge rounded-pill bg-danger'>Rejected</span>  : <span className='badge rounded-pill bg-success'>Accepted</span>  }</td>
                                             <td>
                                                 { !claim.approved && !claim.rejected ?
-                                                    <DropdownButton title="Action" variant='secondary'>
+                                                    <DropdownButton title="Action" variant='coolColor'>
                                                         <Dropdown.Item onClick={(e) => approveClaim(e, claim)} >Approve</Dropdown.Item>
                                                         <Dropdown.Item onClick={(e) => rejectClaim(e, claim)} >Reject</Dropdown.Item>
                                                     </DropdownButton>
                                                 :   <>
-                                                        <DropdownButton title="Action" disabled variant='secondary'>
+                                                        <DropdownButton title="Action" disabled variant='coolColor'>
                                                             <Dropdown.Item onClick={(e) => approveClaim(e, claim)} >Approve</Dropdown.Item>
                                                             <Dropdown.Item onClick={(e) => rejectClaim(e, claim)} >Reject</Dropdown.Item>
                                                         </DropdownButton>
@@ -292,7 +292,7 @@ const Insurer = ({mediChain, account, ethValue}) => {
                                                 <td>{treatment.treatment}</td>
                                                 <td>
                                                     { treatment.prescription ? 
-                                                        <Link to={`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${treatment.prescription}`} target="_blank"><Button>View</Button></Link>
+                                                        <Link to={`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${treatment.prescription}`} target="_blank"><Button variant="coolColor">View</Button></Link>
                                                         : "No document uploaded"
                                                     }
                                                 </td>

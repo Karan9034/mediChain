@@ -4,6 +4,7 @@ import { create } from 'ipfs-http-client';
 import { Buffer } from 'buffer';
 import MediChain from './contracts/MediChain.json';
 import Dashboard from './components/Dashboard.js';
+import Home from './components/Home.js';
 import Login from './components/Login.js';
 import Register from './components/Register.js';
 import Footer from './components/Footer';
@@ -61,10 +62,10 @@ function App() {
     <Router>
       <SiteNavbar token={token} account={account} setAccount={setAccount} setToken={setToken}/>
       <Routes>
+        <Route path='/' element={<Home />} />
         <Route path='/login' element={<Login mediChain={mediChain} token={token} setToken={setToken} setAccount={setAccount} connectWallet={connectWallet} account={account}/>} />
         <Route path='/dashboard' element={<Dashboard mediChain={mediChain} token={token} account={account} ipfs={ipfs}/>} />
         <Route path='/register' element={<Register mediChain={mediChain} ipfs={ipfs} token={token} setToken={setToken} setAccount={setAccount} connectWallet={connectWallet} account={account} />} />
-        
       </Routes>
       <Footer/>
     </Router>

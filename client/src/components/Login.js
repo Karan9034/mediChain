@@ -90,7 +90,7 @@ const Login = ({mediChain, connectWallet, token, account, setToken, setAccount})
     }, [mediChain])
 
     return (
-        <div className='main'>
+        <div className='login'>
             <div className='box'>
                 <h2>Login</h2>
                 <br />
@@ -102,7 +102,7 @@ const Login = ({mediChain, connectWallet, token, account, setToken, setAccount})
                         : <Form.Control type="button" disabled value={`Connected Wallet with Address: ${account}`}/>
                         }
                     </Form.Group>
-                    <Button variant="primary" type="submit">
+                    <Button variant="coolColor" type="submit">
                         Submit
                     </Button>
                 </Form>

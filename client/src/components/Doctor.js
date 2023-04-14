@@ -160,8 +160,8 @@ const Doctor = ({ipfs, mediChain, account}) => {
                         <td>{idx+1}</td>
                         <td>{pat.name}</td>
                         <td>{pat.email}</td>
-                        <td><Button onClick={(e) => handleShowModal(pat)} >Diagnose</Button></td>
-                        <td><Button className='btn-secondary' onClick={(e) => handleShowRecordModal(pat)} >View</Button></td>
+                        <td><Button variant='coolColor' onClick={(e) => handleShowModal(pat)} >Diagnose</Button></td>
+                        <td><Button variant="coolColor" onClick={(e) => handleShowRecordModal(pat)} >View</Button></td>
                       </tr>
                     )
                   })
@@ -189,7 +189,7 @@ const Doctor = ({ipfs, mediChain, account}) => {
                           <td>{idx+1}</td>
                           <td>{transaction.senderEmail}</td>
                           <td>{transaction.value}</td>
-                          <td>{transaction.settled ? 'Settled' : "Pending"}</td>
+                          <td>{transaction.settled ? <span className='badge rounded-pill bg-success'>Settled</span> : <span className='badge rounded-pill bg-warning'>Pending</span>}</td>
                         </tr>
                       )
                     })
@@ -226,7 +226,7 @@ const Doctor = ({ipfs, mediChain, account}) => {
               <Button variant="secondary" onClick={handleCloseModal}>
                 Close
               </Button>
-              <Button type="submit" variant="primary" onClick={submitDiagnosis}>
+              <Button type="submit" variant="coolColor" onClick={submitDiagnosis}>
                 Submit Diagnosis
               </Button>
             </Modal.Footer>
@@ -273,7 +273,7 @@ const Doctor = ({ipfs, mediChain, account}) => {
                                 <td>{treatment.treatment}</td>
                                 <td>
                                   { treatment.prescription ? 
-                                    <Link to={`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${treatment.prescription}`} target="_blank"><Button>View</Button></Link>
+                                    <Link to={`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${treatment.prescription}`} target="_blank"><Button variant="coolColor">View</Button></Link>
                                     : "No document uploaded"
                                   }
                                 </td>

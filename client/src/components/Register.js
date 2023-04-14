@@ -50,7 +50,7 @@ const Register = ({mediChain, ipfs, connectWallet, token, account, setToken, set
     }, [token])
 
     return (
-        <div className='main'>
+        <div className='register'>
             <div className='box'>
                 <h2>Register</h2>
                 <br />
@@ -85,7 +85,7 @@ const Register = ({mediChain, ipfs, connectWallet, token, account, setToken, set
                     </Form.Group>
                     : <></>
                     }
-                    <Button variant="primary" type="submit">
+                    <Button variant="coolColor" type="submit">
                         Submit
                     </Button>
                 </Form>

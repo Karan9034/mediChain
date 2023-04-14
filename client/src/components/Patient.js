@@ -133,7 +133,7 @@ const Patient = ({mediChain, account, ethValue}) => {
             </Form>
             <div>
               <span>Your records are stored here: &nbsp; &nbsp;</span>
-              <Button style={{width: "20%", height: "4vh"}} onClick={handleShowRecordModal}>View Records</Button>
+              <Button variant="coolColor" style={{width: "20%", height: "4vh"}} onClick={handleShowRecordModal}>View Records</Button>
             </div>
           </div>
           <div className='box'>
@@ -143,7 +143,7 @@ const Patient = ({mediChain, account, ethValue}) => {
                 <Form.Label>Email:</Form.Label>
                 <Form.Control required type="email" value={docEmail} onChange={(e) => setDocEmail(e.target.value)} placeholder="Enter doctor's email"></Form.Control>
               </Form.Group>
-              <Button variant="primary" type="submit">
+              <Button variant="coolColor" type="submit">
                   Submit
               </Button>
             </Form>
@@ -240,7 +240,7 @@ const Patient = ({mediChain, account, ethValue}) => {
                     </div>
                     : <></>
                   }
-                  <Button type="submit">Buy Policy</Button>
+                  <Button variant="coolColor" type="submit">Buy Policy</Button>
                 </Form>
               </>
             }
@@ -265,11 +265,11 @@ const Patient = ({mediChain, account, ethValue}) => {
                           <td>{idx+1}</td>
                           <td>{transaction.doctorEmail}</td>
                           <td>{transaction.value}</td>
-                          <td>{transaction.settled ? 'Settled' : "Pending"}</td>
+                          <td>{transaction.settled ? <span className='badge rounded-pill bg-success'>Settled</span> : <span className='badge rounded-pill bg-warning'>Pending</span>}</td>
                           <td>
                             { !transaction.settled ?
-                              <Button className='btn-success' onClick={(e) => settlePayment(e, transaction)}>Pay</Button>
-                              : <Button className='btn-success' disabled>Pay</Button>
+                              <Button className='btn-coolColor' onClick={(e) => settlePayment(e, transaction)}>Pay</Button>
+                              : <Button className='btn-coolColor' disabled>Pay</Button>
                             }
                           </td>
                         </tr>
@@ -321,7 +321,7 @@ const Patient = ({mediChain, account, ethValue}) => {
                                 <td>{treatment.treatment}</td>
                                 <td>
                                   { treatment.prescription ? 
-                                    <Link to={`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${treatment.prescription}`} target="_blank"><Button>View</Button></Link>
+                                    <Link to={`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${treatment.prescription}`} target="_blank"><Button variant="coolColor">View</Button></Link>
                                     : "No document uploaded"
                                   }
                                 </td>

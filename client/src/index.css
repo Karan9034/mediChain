@@ -19,21 +19,41 @@ body {
   /* background-color: #b1c7e4 !important; */
 }
 
-.main{
+
+
+
+.home{
+  width: 60%;
+  margin-top: 5vh;
+  align-items: center;
+  margin-left: 20%;
+  margin-right: 20%;
+}
+.login{
   width: 40%;
-  margin-top: 10vh;
+  margin-top: 30vh;
+  margin-left: 30%;
+  margin-right: 30%;
+}
+.register{
+  width: 40%;
+  margin-top: 20vh;
   margin-left: 30%;
   margin-right: 30%;
 }
 .dash{
   width: 50%;
-  margin-top: 10vh;
+  margin-top: 12vh;
   margin-left: 25%;
   margin-right: 25%;
 }
 
 .bg-coolColor{
   background-color: #09335E !important;
+}
+.btn-coolColor{
+  background-color: #09335E !important;
+  color:#fff !important;
 }
 nav {
   height: 5rem;
