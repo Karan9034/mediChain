@@ -130,7 +130,7 @@ const Doctor = ({ipfs, mediChain, account}) => {
             <h2>Doctor's Profile</h2>
             <Form>
               <Form.Group>
-                <Form.Label>Name: {doctor.name}</Form.Label>
+                <Form.Label>Name: Dr. {doctor.name}</Form.Label>
               </Form.Group>
               <Form.Group>
                 <Form.Label>Email: {doctor.email}</Form.Label>

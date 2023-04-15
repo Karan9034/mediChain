@@ -49,7 +49,6 @@ const Login = ({mediChain, connectWallet, token, account, setToken, setAccount})
                             setAccount(a);            
                             return navigate('/dashboard')
                         }else{
-                            console.log("rem1", t, a)
                             localStorage.removeItem('token')
                             localStorage.removeItem('account')
                             setToken('');
@@ -63,7 +62,6 @@ const Login = ({mediChain, connectWallet, token, account, setToken, setAccount})
                             setAccount(a);
                             return navigate('/dashboard')
                         }else{
-                            console.log("rem2", t, a)
                             localStorage.removeItem('token')
                             localStorage.removeItem('account')
                             setToken('');
@@ -77,7 +75,6 @@ const Login = ({mediChain, connectWallet, token, account, setToken, setAccount})
                             setAccount(a);
                             return navigate('/dashboard')
                         }else{
-                            console.log("rem3", t, a)
                             localStorage.removeItem('token')
                             localStorage.removeItem('account')
                             setToken('');

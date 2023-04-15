@@ -24,7 +24,6 @@ const Patient = ({mediChain, account, ethValue}) => {
   const getPatientData = async () => {
       var patient = await mediChain.methods.patientInfo(account).call();
       setPatient(patient);
-      console.log(patient)
   }
   const giveAccess = (e) => {
     e.preventDefault();
@@ -57,14 +56,13 @@ const Patient = ({mediChain, account, ethValue}) => {
     for(let i=0; i<ins.length; i++){
       let insurer = await mediChain.methods.insurerInfo(ins[i]).call();
       insurer = {...insurer, account: ins[i]};
-      it = [...insurerList, insurer]
+      it = [...it, insurer]
     }
     setInsurerList(it)
   }
   const getPolicyList = async () => {
     var policyList = await mediChain.methods.getInsurerPolicyList(buyFromInsurer).call()
     setPolicyList(policyList);
-    console.log(policyList)
   }
   const purchasePolicy = async (e) => {
     e.preventDefault();
@@ -107,7 +105,7 @@ const Patient = ({mediChain, account, ethValue}) => {
     if(docList.length === 0) getDoctorAccessList();
     if(patient?.policyActive) getInsurer();
     if(insurerList.length === 0) getInsurerList();
-    if(policyList.length === 0 && buyFromInsurer) getPolicyList();
+    if(buyFromInsurer) getPolicyList();
     if(transactionsList.length === 0) getTransactionsList();
   }, [patient, docList, insurerList, buyFromInsurer, transactionsList])
 
@@ -207,7 +205,10 @@ const Patient = ({mediChain, account, ethValue}) => {
                 <Form onSubmit={purchasePolicy}>
                   <Form.Group className='mb-3'>
                     <Form.Label>Select Insurance Provider:</Form.Label>
-                    <Form.Select onChange={(e) => setBuyFromInsurer(e.target.value)}>
+                    <Form.Select onChange={(e) => {
+                      setBuyFromInsurer(e.target.value)
+                      getPolicyList()
+                    }}>
                       <option>Choose</option>
                       {
                         insurerList.length > 0

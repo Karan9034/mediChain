@@ -37,7 +37,7 @@ function App() {
         });
       window.ethereum.on('chainChanged', () => window.location.reload());
 		} else {
-			console.log('Please use Metamask or a Web3 enabled browser');
+			alert('Please use Metamask or a Web3 enabled browser');
 		}
   }
 
@@ -50,7 +50,7 @@ function App() {
       setMediChain(mediChain)
       console.log(await mediChain.methods.name().call())
     }else{
-      console.log('Please change your network')
+      alert('Smart contract not deployed on this network')
     }
   }
 
