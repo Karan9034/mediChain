@@ -1,5 +1,5 @@
 <p align="center">
-  <h1 align="center">[MediChain](https://medichain.biz/)</h1>
+  <h1 align="center"><a href="https://medichain.biz/" target="_blank">MediChain</a></h1>
   <p align="center">
     Revolutionizing healthcare data management: blockchain-based medical record storage for patients and insurance companies
   
