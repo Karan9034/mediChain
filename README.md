@@ -1,22 +1,10 @@
 <p align="center">
-  <!-- <a href="https://github.com/Karan9034/gfg-enigma/">
-    <img src="https://dyltqmyl993wv.cloudfront.net/assets/stacks/node-exporter/img/node-exporter-stack-110x117.png">
-  </a> -->
-
   <h1 align="center">MediChain</h1>
-
   <p align="center">
-
-
-
-
-
-
     Revolutionizing healthcare data management: blockchain-based medical record storage for patients and insurance companies
   
   https://user-images.githubusercontent.com/66792720/232314462-c424ec69-5868-4194-9311-9d9ab89e18fe.mp4
   </p>
-
 </p>
 
 
@@ -51,18 +39,16 @@
 
 The data privacy of patients is essential because it involves sensitive personal information, such as medical records, test results, and health history. If failed to do so it can result in various consequences, such as financial loss, identity theft, damage to reputation, and even physical harm. It can also lead to discrimination, as individuals with certain health conditions may face challenges in obtaining health insurance.
 
-
 ## ℹ️ About The Project
 
-Our project Medicahain seeks to address these challenges by leveraging the power of blockchain to create a secure, decentralized platform for storing and sharing healthcare data. By doing so, we hope to empower patients and Insurance providers, to make more informed decisions, improve outcomes, and advance the field of healthcare as a whole.
+Our project MediChain seeks to address these challenges by leveraging the power of blockchain to create a secure, decentralized platform for storing and sharing healthcare data. By doing so, we hope to empower patients and Insurance providers, to make more informed decisions, improve outcomes, and advance the field of healthcare as a whole.
 
 ## ℹ️ Future Prospects
 1. We will be implementing insurance policy as ERC-721 Standard (i.e Non-Fungible Tokens), so as to specify the uniqueness and ownership of each insurance policy.
-2. We will be giving patients the Flexibility to buy health insurance policy according to their preference instead of defined policies by the insurance provider.
-3. We will predict policy annual premium amount using Machine Learning techniquesbased on factors like patient's age, location, etc.
+2. We will be giving patients the flexibility to buy health insurance policy according to their preference instead of defined policies by the insurance provider.
+3. We will predict policy annual premium amount using Machine Learning techniques based on factors like patient's age, location, etc.
 
-
-### 🛠️ Built With
+## 🛠️ Built With
 
 ![img1](https://user-images.githubusercontent.com/66792720/232314435-eaf54582-deb5-4970-ab55-2d9bf8976020.jpeg)
 Following technologies and libraries are used for the development of this project.
@@ -76,7 +62,7 @@ Following technologies and libraries are used for the development of this projec
 
 <!-- GETTING STARTED -->
 
-## 📌 Getting Started
+## 📌 Installation
 
 To setup the project locally follow the steps below
 
