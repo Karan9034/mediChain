@@ -3,7 +3,7 @@
     <img src="https://dyltqmyl993wv.cloudfront.net/assets/stacks/node-exporter/img/node-exporter-stack-110x117.png">
   </a> -->
 
-  <h2 align="center">MediChain</h2>
+  <h1 align="center">MediChain</h1>
 
   <p align="center">
 
