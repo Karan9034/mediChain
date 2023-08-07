@@ -92,7 +92,7 @@ const Patient = ({mediChain, account, ethValue}) => {
   const handleCloseRecordModal = () => setShowRecordModal(false);
   const handleShowRecordModal = async () => {
     var record = {}
-    await fetch(`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${patient.record}`)
+    await fetch(`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/ipfs/${patient.record}`)
       .then(res => res.json())
       .then(data => record = data)
     await setPatientRecord(record);
@@ -322,7 +322,7 @@ const Patient = ({mediChain, account, ethValue}) => {
                                 <td>{treatment.treatment}</td>
                                 <td>
                                   { treatment.prescription ? 
-                                    <Link to={`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${treatment.prescription}`} target="_blank"><Button variant="coolColor">View</Button></Link>
+                                    <Link to={`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/ipfs/${treatment.prescription}`} target="_blank"><Button variant="coolColor">View</Button></Link>
                                     : "No document uploaded"
                                   }
                                 </td>

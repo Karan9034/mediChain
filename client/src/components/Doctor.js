@@ -66,7 +66,7 @@ const Doctor = ({ipfs, mediChain, account}) => {
   }
   const handleShowRecordModal = async (patient) => {
     var record = {}
-    await fetch(`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${patient.record}`)
+    await fetch(`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/ipfs/${patient.record}`)
       .then(res => res.json())
       .then(data => record = data)
     await setPatientRecord(record);
@@ -85,7 +85,7 @@ const Doctor = ({ipfs, mediChain, account}) => {
       })
     }
     var record = {}
-    await fetch(`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${patient.record}`)
+    await fetch(`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/ipfs/${patient.record}`)
       .then(res => res.json())
       .then(data => {
         record = data;
@@ -273,7 +273,7 @@ const Doctor = ({ipfs, mediChain, account}) => {
                                 <td>{treatment.treatment}</td>
                                 <td>
                                   { treatment.prescription ? 
-                                    <Link to={`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/${treatment.prescription}`} target="_blank"><Button variant="coolColor">View</Button></Link>
+                                    <Link to={`${process.env.REACT_APP_INFURA_DEDICATED_GATEWAY}/ipfs/${treatment.prescription}`} target="_blank"><Button variant="coolColor">View</Button></Link>
                                     : "No document uploaded"
                                   }
                                 </td>
