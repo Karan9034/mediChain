@@ -42,7 +42,7 @@ function App() {
   }
 
   const getContractInstance = async () => {
-    const web3 = new Web3(window.ethereum || Web3.givenProvider || 'http://localhost:7545')
+    const web3 = new Web3(window.ethereum || Web3.givenProvider || 'http://localhost:8545')
     const networkId = await web3.eth.net.getId()
     const networkData = MediChain.networks[networkId]
     if(networkData){
