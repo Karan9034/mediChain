@@ -1,3 +1,9 @@
+<hr />
+
+Note: There have been bugs with IPFS integration due to changes in Infura. Also, please be mindful that smart contracts have not undergone any audits and not to be used on Mainnet.
+
+<hr />
+
 <p align="center">
   <h1 align="center"><a href="https://medichain.biz/" target="_blank">MediChain</a></h1>
   <p align="center">
